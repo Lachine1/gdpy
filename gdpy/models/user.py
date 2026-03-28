@@ -285,24 +285,38 @@ class Comment(BaseModel):
     """Represents a level or profile comment.
 
     Attributes:
-        comment_id: Unique comment identifier.
-        level_id: ID of the level (for level comments).
-        content: Comment text content.
+        content: Comment text content (base64 decoded).
         author: Comment author's username.
-        author_id: Comment author's account ID.
+        author_id: Comment author's user ID.
         likes: Number of likes on the comment.
+        message_id: Unique comment/message ID.
+        percent: Progress percentage shown in comment.
+        age: How long ago the comment was posted.
         is_spam: Whether comment is marked as spam.
     """
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
-    comment_id: int = Field(alias="2")
-    level_id: int = Field(default=0, alias="1")
-    content: str = Field(alias="9")
-    author: str = Field(alias="3")
-    author_id: int = Field(alias="6")
-    likes: int = Field(default=0, alias="12")
+    content: str = Field(alias="2")
+    author: str = Field(default="", alias="username")
+    author_id: int = Field(default=0, alias="3")
+    likes: int = Field(default=0, alias="4")
+    message_id: int = Field(default=0, alias="6")
+    percent: int = Field(default=0, alias="10")
+    age: str = Field(default="", alias="9")
     is_spam: bool = Field(default=False, alias="7")
+
+    @field_validator("content", mode="before")
+    @classmethod
+    def decode_base64(cls, v: Any) -> str:
+        """Decode base64 encoded comment content."""
+        if isinstance(v, str):
+            try:
+                import base64
+                return base64.b64decode(v).decode("utf-8")
+            except Exception:
+                return v
+        return str(v)
 
 
 class Song(BaseModel):
@@ -373,19 +387,35 @@ class LeaderboardScore(BaseModel):
     """Represents a leaderboard entry.
 
     Attributes:
-        rank: Global rank position.
         username: Player's username.
         user_id: Player's user ID.
-        account_id: Player's account ID.
         stars: Total stars.
+        demons: Demons completed.
+        ranking: Global rank position.
+        creator_points: Creator points earned.
+        icon_id: Current icon ID.
+        color1: Primary icon color.
+        color2: Secondary icon color.
+        secret_coins: Secret coins collected (max 3).
+        icon_type: Current icon type.
+        account_id: Player's account ID.
+        user_coins: User coins collected.
         diamonds: Total diamonds.
     """
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
 
-    rank: int = Field(alias="1")
-    username: str = Field(alias="2")
-    user_id: int = Field(alias="3")
-    account_id: int = Field(alias="4")
-    stars: int = Field(default=0, alias="5")
-    diamonds: int = Field(default=0, alias="6")
+    username: str = Field(alias="1")
+    user_id: int = Field(alias="2")
+    stars: int = Field(default=0, alias="3")
+    demons: int = Field(default=0, alias="4")
+    ranking: int = Field(default=0, alias="6")
+    creator_points: int = Field(default=0, alias="8")
+    icon_id: int = Field(default=0, alias="9")
+    color1: int = Field(default=0, alias="10")
+    color2: int = Field(default=0, alias="11")
+    secret_coins: int = Field(default=0, alias="13")
+    icon_type: int = Field(default=0, alias="14")
+    account_id: int = Field(default=0, alias="16")
+    user_coins: int = Field(default=0, alias="17")
+    diamonds: int = Field(default=0, alias="46")

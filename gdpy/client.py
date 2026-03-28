@@ -18,7 +18,7 @@ from gdpy.exceptions import (
     UsernameTakenError,
     UsernameTooShortError,
 )
-from gdpy.models import Level, User
+from gdpy.models import Comment, LeaderboardScore, Level, Song, User
 from gdpy.utils.parsing import parse_list_response, parse_response
 
 
@@ -268,6 +268,109 @@ class Client:
         levels_data = parse_list_response(parts[0])
         return [Level.model_validate(level) for level in levels_data]
 
+    def get_song(self, song_id: int) -> Song:
+        """Get a custom song by its ID.
+
+        Args:
+            song_id: The ID of the song.
+
+        Returns:
+            Song object with song information.
+
+        Raises:
+            NotFoundError: If song is not found.
+            InvalidRequestError: If rate limited.
+        """
+        data = {"songID": str(song_id)}
+        response = self._request("getGJSongInfo.php", data)
+        if response.startswith("-"):
+            self._handle_error(response)
+        parsed = parse_response(response)
+        return Song.model_validate(parsed)
+
+    def get_level_comments(
+        self, level_id: int, limit: int = 10, page: int = 0
+    ) -> list[Comment]:
+        """Get comments for a level.
+
+        Args:
+            level_id: The ID of the level.
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Comment objects.
+        """
+        data = {
+            "levelID": str(level_id),
+            "total": str(limit),
+            "page": str(page),
+            "mode": "0",
+        }
+        response = self._request("getGJComments21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments = []
+        for comment_str in parts[0].split("|"):
+            if not comment_str:
+                continue
+            comment_parts = comment_str.split(":")
+            comment_data = parse_response(comment_parts[0])
+            if len(comment_parts) > 1:
+                user_data = parse_response(comment_parts[1])
+                comment_data["username"] = user_data.get("1", "")
+            comments.append(Comment.model_validate(comment_data))
+        return comments
+
+    def get_leaderboard(
+        self, limit: int = 100, type: str = "top"
+    ) -> list[LeaderboardScore]:
+        """Get the leaderboard.
+
+        Args:
+            limit: Maximum number of results (max 100).
+            type: Leaderboard type - "top" or "creators".
+
+        Returns:
+            List of LeaderboardScore objects.
+        """
+        type_value = "creators" if type == "creators" else "top"
+        data = {"type": type_value, "count": str(min(limit, 100))}
+        response = self._request("getGJScores20.php", data)
+        if response.startswith("-"):
+            return []
+        entries_data = parse_list_response(response)
+        return [LeaderboardScore.model_validate(e) for e in entries_data]
+
+    def get_user_levels(self, user_id: int, limit: int = 10, page: int = 0) -> list[Level]:
+        """Get levels created by a user.
+
+        Args:
+            user_id: The user's ID (not account ID).
+            limit: Maximum number of levels to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Level objects created by the user.
+        """
+        data = {
+            "str": str(user_id),
+            "total": str(limit),
+            "page": str(page),
+            "type": "5",
+        }
+        response = self._request("getGJLevels21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        levels_data = parse_list_response(parts[0])
+        return [Level.model_validate(level) for level in levels_data]
+
 
 class AsyncClient:
     """Asynchronous client for interacting with the Geometry Dash API.
@@ -506,6 +609,109 @@ class AsyncClient:
             List of Level objects matching the query.
         """
         data = {"str": query, "total": str(limit), "page": str(page), "type": "0"}
+        response = await self._request("getGJLevels21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        levels_data = parse_list_response(parts[0])
+        return [Level.model_validate(level) for level in levels_data]
+
+    async def get_song(self, song_id: int) -> Song:
+        """Get a custom song by its ID.
+
+        Args:
+            song_id: The ID of the song.
+
+        Returns:
+            Song object with song information.
+
+        Raises:
+            NotFoundError: If song is not found.
+            InvalidRequestError: If rate limited.
+        """
+        data = {"songID": str(song_id)}
+        response = await self._request("getGJSongInfo.php", data)
+        if response.startswith("-"):
+            self._handle_error(response)
+        parsed = parse_response(response)
+        return Song.model_validate(parsed)
+
+    async def get_level_comments(
+        self, level_id: int, limit: int = 10, page: int = 0
+    ) -> list[Comment]:
+        """Get comments for a level.
+
+        Args:
+            level_id: The ID of the level.
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Comment objects.
+        """
+        data = {
+            "levelID": str(level_id),
+            "total": str(limit),
+            "page": str(page),
+            "mode": "0",
+        }
+        response = await self._request("getGJComments21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments = []
+        for comment_str in parts[0].split("|"):
+            if not comment_str:
+                continue
+            comment_parts = comment_str.split(":")
+            comment_data = parse_response(comment_parts[0])
+            if len(comment_parts) > 1:
+                user_data = parse_response(comment_parts[1])
+                comment_data["username"] = user_data.get("1", "")
+            comments.append(Comment.model_validate(comment_data))
+        return comments
+
+    async def get_leaderboard(
+        self, limit: int = 100, type: str = "top"
+    ) -> list[LeaderboardScore]:
+        """Get the leaderboard.
+
+        Args:
+            limit: Maximum number of results (max 100).
+            type: Leaderboard type - "top" or "creators".
+
+        Returns:
+            List of LeaderboardScore objects.
+        """
+        type_value = "creators" if type == "creators" else "top"
+        data = {"type": type_value, "count": str(min(limit, 100))}
+        response = await self._request("getGJScores20.php", data)
+        if response.startswith("-"):
+            return []
+        entries_data = parse_list_response(response)
+        return [LeaderboardScore.model_validate(e) for e in entries_data]
+
+    async def get_user_levels(self, user_id: int, limit: int = 10, page: int = 0) -> list[Level]:
+        """Get levels created by a user.
+
+        Args:
+            user_id: The user's ID (not account ID).
+            limit: Maximum number of levels to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Level objects created by the user.
+        """
+        data = {
+            "str": str(user_id),
+            "total": str(limit),
+            "page": str(page),
+            "type": "5",
+        }
         response = await self._request("getGJLevels21.php", data)
         if response.startswith("-"):
             return []
