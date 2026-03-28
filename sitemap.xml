@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://lachine1.github.io/gdpy/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/examples/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/getting-started/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/api/client/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/api/crypto/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/api/exceptions/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+    <url>
+         <loc>https://lachine1.github.io/gdpy/api/models/</loc>
+         <lastmod>2026-03-28</lastmod>
+    </url>
+</urlset>
