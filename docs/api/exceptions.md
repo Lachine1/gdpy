@@ -1,5 +1,9 @@
 # Exceptions
 
+Exception hierarchy for handling errors.
+
+## Base Exceptions
+
 ::: gdpy.exceptions.base.GDError
     handlers:
       python:
@@ -9,6 +13,8 @@
     handlers:
       python:
         docstring_style: google
+
+## Authentication Errors
 
 ::: gdpy.exceptions.auth.AuthError
     handlers:
@@ -25,6 +31,8 @@
       python:
         docstring_style: google
 
+## Request Errors
+
 ::: gdpy.exceptions.invalid_request.InvalidRequestError
     handlers:
       python:
@@ -35,10 +43,34 @@
       python:
         docstring_style: google
 
+## Registration Errors
+
 ::: gdpy.exceptions.registration.RegistrationError
     handlers:
       python:
         docstring_style: google
+
+::: gdpy.exceptions.registration.UsernameTakenError
+    handlers:
+      python:
+        docstring_style: google
+
+::: gdpy.exceptions.registration.EmailTakenError
+    handlers:
+      python:
+        docstring_style: google
+
+::: gdpy.exceptions.registration.PasswordTooShortError
+    handlers:
+      python:
+        docstring_style: google
+
+::: gdpy.exceptions.registration.UsernameTooShortError
+    handlers:
+      python:
+        docstring_style: google
+
+## Validation Errors
 
 ::: gdpy.exceptions.validation.ValidationError
     handlers:
