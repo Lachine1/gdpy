@@ -171,10 +171,72 @@ class TestSearchAndFetch:
         await asyncio.sleep(1)
         leaderboard = await client.get_leaderboard(limit=10)
         assert len(leaderboard) > 0
-        
+
         top_user = leaderboard[0]
         await asyncio.sleep(2)
         user = await client.get_user(account_id=top_user.account_id)
-        
+
         assert user.username == top_user.username
         assert user.stars > 0
+
+
+class TestLevelData:
+    @pytest.mark.asyncio
+    async def test_level_has_level_string(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        level = await client.get_level(level_id=128)
+        assert level.level_string is not None
+        assert level.level_string != ""
+
+    @pytest.mark.asyncio
+    async def test_level_has_all_fields(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        level = await client.get_level(level_id=128)
+        assert level.level_id > 0
+        assert level.name != ""
+        assert level.downloads >= 0
+        assert level.likes >= 0
+        assert level.objects >= 0
+
+    @pytest.mark.asyncio
+    async def test_level_comments_have_all_fields(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        comments = await client.get_level_comments(level_id=128, limit=10)
+        if comments:
+            comment = comments[0]
+            assert comment.content != ""
+            assert comment.author != ""
+            assert comment.message_id > 0
+            assert comment.likes >= 0
+
+
+class TestUserData:
+    @pytest.mark.asyncio
+    async def test_user_has_creator_points(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)
+        assert user.creator_points >= 0
+
+    @pytest.mark.asyncio
+    async def test_user_has_all_stats(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)
+        assert user.stars >= 0
+        assert user.diamonds >= 0
+        assert user.moons >= 0
+        assert user.secret_coins >= 0
+        assert user.user_coins >= 0
+        assert user.demons >= 0
+
+    @pytest.mark.asyncio
+    async def test_user_has_social_links(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)
+        assert user.youtube is not None or user.twitter is not None or user.twitch is not None
+
+    @pytest.mark.asyncio
+    async def test_leaderboard_entry_has_creator_points(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        leaderboard = await client.get_leaderboard(limit=5)
+        if leaderboard:
+            entry = leaderboard[0]
+            assert entry.creator_points >= 0
+            assert entry.stars >= 0
+            assert entry.diamonds >= 0
