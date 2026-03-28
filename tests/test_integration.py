@@ -240,3 +240,77 @@ class TestUserData:
             assert entry.creator_points >= 0
             assert entry.stars >= 0
             assert entry.diamonds >= 0
+
+
+class TestDailyLevel:
+    @pytest.mark.asyncio
+    async def test_get_daily_level(self, client: AsyncClient):
+        daily = await client.get_daily_level()
+        assert daily.index >= 0
+
+    @pytest.mark.asyncio
+    async def test_get_weekly_level(self, client: AsyncClient):
+        weekly = await client.get_daily_level(type="weekly")
+        assert weekly.index >= 0
+
+
+class TestGauntlets:
+    @pytest.mark.asyncio
+    async def test_get_gauntlets(self, client: AsyncClient):
+        gauntlets = await client.get_gauntlets()
+        assert isinstance(gauntlets, list)
+
+    @pytest.mark.asyncio
+    async def test_gauntlet_has_levels(self, client: AsyncClient):
+        gauntlets = await client.get_gauntlets()
+        if gauntlets:
+            assert gauntlets[0].gauntlet_id > 0
+            assert len(gauntlets[0].level_ids) > 0
+
+
+class TestMapPacks:
+    @pytest.mark.asyncio
+    async def test_get_map_packs(self, client: AsyncClient):
+        packs = await client.get_map_packs()
+        assert isinstance(packs, list)
+
+    @pytest.mark.asyncio
+    async def test_map_pack_has_name(self, client: AsyncClient):
+        packs = await client.get_map_packs()
+        if packs:
+            assert packs[0].pack_id > 0
+            assert packs[0].name != ""
+
+
+class TestTopArtists:
+    @pytest.mark.asyncio
+    async def test_get_top_artists(self, client: AsyncClient):
+        artists = await client.get_top_artists()
+        assert isinstance(artists, list)
+
+    @pytest.mark.asyncio
+    async def test_top_artist_has_name(self, client: AsyncClient):
+        artists = await client.get_top_artists()
+        if artists:
+            assert artists[0].name != ""
+
+
+class TestAccountComments:
+    @pytest.mark.asyncio
+    async def test_get_account_comments(self, client: AsyncClient):
+        comments = await client.get_account_comments(account_id=71)
+        assert isinstance(comments, list)
+
+    @pytest.mark.asyncio
+    async def test_account_comment_has_content(self, client: AsyncClient):
+        comments = await client.get_account_comments(account_id=71, limit=5)
+        if comments:
+            assert comments[0].content != ""
+
+
+class TestCommentHistory:
+    @pytest.mark.asyncio
+    async def test_get_comment_history(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)
+        comments = await client.get_comment_history(user_id=user.user_id)
+        assert isinstance(comments, list)

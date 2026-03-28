@@ -18,12 +18,12 @@ A modern, type-safe Python library for interacting with the Geometry Dash privat
 | :--- | :---: | :---: | :---: |
 | Authentication | 2 | 2 | 100% |
 | Users | 4 | 4 | 100% |
-| Levels | 4 | 13 | 31% |
-| Comments | 1 | 7 | 14% |
-| Songs | 1 | 3 | 33% |
+| Levels | 7 | 13 | 54% |
+| Comments | 3 | 7 | 43% |
+| Songs | 2 | 3 | 67% |
 | Social | 0 | 8 | 0% |
 | Messages | 0 | 4 | 0% |
-| **Total** | **12** | **43** | **28%** |
+| **Total** | **18** | **43** | **42%** |
 
 See [API Coverage](api-coverage.md) for detailed endpoint status.
 
@@ -84,4 +84,4 @@ MIT
 
 ---
 
-**Credits:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
+**Credits:** This library is based on the [Geometry Dash API documentation](https://boomlings.dev).

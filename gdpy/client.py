@@ -18,7 +18,17 @@ from gdpy.exceptions import (
     UsernameTakenError,
     UsernameTooShortError,
 )
-from gdpy.models import Comment, LeaderboardScore, Level, Song, User
+from gdpy.models import (
+    Comment,
+    DailyLevel,
+    Gauntlet,
+    LeaderboardScore,
+    Level,
+    MapPack,
+    Song,
+    TopArtist,
+    User,
+)
 from gdpy.utils.parsing import parse_list_response, parse_response
 
 
@@ -371,6 +381,145 @@ class Client:
         levels_data = parse_list_response(parts[0])
         return [Level.model_validate(level) for level in levels_data]
 
+    def get_daily_level(self, type: str = "daily") -> DailyLevel:
+        """Get the current daily/weekly level info.
+
+        Args:
+            type: "daily", "weekly", or "event".
+
+        Returns:
+            DailyLevel object with index and time_left.
+        """
+        type_map = {"daily": "0", "weekly": "1", "event": "2"}
+        data = {"type": type_map.get(type, "0")}
+        response = self._request("getGJDailyLevel.php", data)
+        if response.startswith("-"):
+            return DailyLevel()
+        parts = response.split("|")
+        if len(parts) >= 2:
+            return DailyLevel(index=int(parts[0]), time_left=int(parts[1]))
+        return DailyLevel()
+
+    def get_gauntlets(self) -> list[Gauntlet]:
+        """Get all gauntlets.
+
+        Returns:
+            List of Gauntlet objects.
+        """
+        data = {"special": "1"}
+        response = self._request("getGJGauntlets21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        gauntlets_data = parse_list_response(parts[0])
+        return [Gauntlet.model_validate(g) for g in gauntlets_data]
+
+    def get_map_packs(self, page: int = 0) -> list[MapPack]:
+        """Get map packs.
+
+        Args:
+            page: Page number for pagination.
+
+        Returns:
+            List of MapPack objects.
+        """
+        data = {"page": str(page)}
+        response = self._request("getGJMapPacks21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        packs_data = parse_list_response(parts[0])
+        return [MapPack.model_validate(p) for p in packs_data]
+
+    def get_top_artists(self, page: int = 0) -> list[TopArtist]:
+        """Get RobTop's handpicked top artists.
+
+        Args:
+            page: Page number for pagination.
+
+        Returns:
+            List of TopArtist objects.
+        """
+        data = {"page": str(page)}
+        response = self._request("getGJTopArtists.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        artists_data = parse_list_response(parts[0])
+        return [TopArtist.model_validate(a) for a in artists_data]
+
+    def get_account_comments(
+        self, account_id: int, limit: int = 10, page: int = 0
+    ) -> list[Comment]:
+        """Get comments on a user's profile.
+
+        Args:
+            account_id: The account ID of the user.
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Comment objects.
+        """
+        data = {
+            "accountID": str(account_id),
+            "total": str(limit),
+            "page": str(page),
+        }
+        response = self._request("getGJAccountComments20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments_data = parse_list_response(parts[0])
+        return [Comment.model_validate(c) for c in comments_data]
+
+    def get_comment_history(
+        self, user_id: int, limit: int = 10, page: int = 0, mode: str = "recent"
+    ) -> list[Comment]:
+        """Get a user's comment history (comments they've posted on levels).
+
+        Args:
+            user_id: The user's ID (not account ID).
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+            mode: "recent" or "liked".
+
+        Returns:
+            List of Comment objects.
+        """
+        mode_value = "1" if mode == "liked" else "0"
+        data = {
+            "userID": str(user_id),
+            "total": str(limit),
+            "page": str(page),
+            "mode": mode_value,
+        }
+        response = self._request("getGJCommentHistory.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments = []
+        for comment_str in parts[0].split("|"):
+            if not comment_str:
+                continue
+            comment_parts = comment_str.split(":")
+            comment_data = parse_response(comment_parts[0])
+            if len(comment_parts) > 1:
+                user_data = parse_response(comment_parts[1])
+                comment_data["username"] = user_data.get("1", "")
+            comments.append(Comment.model_validate(comment_data))
+        return comments
+
 
 class AsyncClient:
     """Asynchronous client for interacting with the Geometry Dash API.
@@ -720,3 +869,142 @@ class AsyncClient:
             return []
         levels_data = parse_list_response(parts[0])
         return [Level.model_validate(level) for level in levels_data]
+
+    async def get_daily_level(self, type: str = "daily") -> DailyLevel:
+        """Get the current daily/weekly level info.
+
+        Args:
+            type: "daily", "weekly", or "event".
+
+        Returns:
+            DailyLevel object with index and time_left.
+        """
+        type_map = {"daily": "0", "weekly": "1", "event": "2"}
+        data = {"type": type_map.get(type, "0")}
+        response = await self._request("getGJDailyLevel.php", data)
+        if response.startswith("-"):
+            return DailyLevel()
+        parts = response.split("|")
+        if len(parts) >= 2:
+            return DailyLevel(index=int(parts[0]), time_left=int(parts[1]))
+        return DailyLevel()
+
+    async def get_gauntlets(self) -> list[Gauntlet]:
+        """Get all gauntlets.
+
+        Returns:
+            List of Gauntlet objects.
+        """
+        data = {"special": "1"}
+        response = await self._request("getGJGauntlets21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        gauntlets_data = parse_list_response(parts[0])
+        return [Gauntlet.model_validate(g) for g in gauntlets_data]
+
+    async def get_map_packs(self, page: int = 0) -> list[MapPack]:
+        """Get map packs.
+
+        Args:
+            page: Page number for pagination.
+
+        Returns:
+            List of MapPack objects.
+        """
+        data = {"page": str(page)}
+        response = await self._request("getGJMapPacks21.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        packs_data = parse_list_response(parts[0])
+        return [MapPack.model_validate(p) for p in packs_data]
+
+    async def get_top_artists(self, page: int = 0) -> list[TopArtist]:
+        """Get RobTop's handpicked top artists.
+
+        Args:
+            page: Page number for pagination.
+
+        Returns:
+            List of TopArtist objects.
+        """
+        data = {"page": str(page)}
+        response = await self._request("getGJTopArtists.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        artists_data = parse_list_response(parts[0])
+        return [TopArtist.model_validate(a) for a in artists_data]
+
+    async def get_account_comments(
+        self, account_id: int, limit: int = 10, page: int = 0
+    ) -> list[Comment]:
+        """Get comments on a user's profile.
+
+        Args:
+            account_id: The account ID of the user.
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of Comment objects.
+        """
+        data = {
+            "accountID": str(account_id),
+            "total": str(limit),
+            "page": str(page),
+        }
+        response = await self._request("getGJAccountComments20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments_data = parse_list_response(parts[0])
+        return [Comment.model_validate(c) for c in comments_data]
+
+    async def get_comment_history(
+        self, user_id: int, limit: int = 10, page: int = 0, mode: str = "recent"
+    ) -> list[Comment]:
+        """Get a user's comment history (comments they've posted on levels).
+
+        Args:
+            user_id: The user's ID (not account ID).
+            limit: Maximum number of comments to return.
+            page: Page number for pagination.
+            mode: "recent" or "liked".
+
+        Returns:
+            List of Comment objects.
+        """
+        mode_value = "1" if mode == "liked" else "0"
+        data = {
+            "userID": str(user_id),
+            "total": str(limit),
+            "page": str(page),
+            "mode": mode_value,
+        }
+        response = await self._request("getGJCommentHistory.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        comments = []
+        for comment_str in parts[0].split("|"):
+            if not comment_str:
+                continue
+            comment_parts = comment_str.split(":")
+            comment_data = parse_response(comment_parts[0])
+            if len(comment_parts) > 1:
+                user_data = parse_response(comment_parts[1])
+                comment_data["username"] = user_data.get("1", "")
+            comments.append(Comment.model_validate(comment_data))
+        return comments

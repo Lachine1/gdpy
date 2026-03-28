@@ -419,3 +419,81 @@ class LeaderboardScore(BaseModel):
     account_id: int = Field(default=0, alias="16")
     user_coins: int = Field(default=0, alias="17")
     diamonds: int = Field(default=0, alias="46")
+
+
+class Gauntlet(BaseModel):
+    """Represents a Geometry Dash gauntlet.
+
+    Attributes:
+        gauntlet_id: Unique gauntlet identifier.
+        levels: List of level IDs in the gauntlet.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    gauntlet_id: int = Field(alias="1")
+    levels: str = Field(alias="3")
+
+    @property
+    def level_ids(self) -> list[int]:
+        """Get list of level IDs as integers."""
+        return [int(lvl) for lvl in self.levels.split(",") if lvl]
+
+
+class MapPack(BaseModel):
+    """Represents a Geometry Dash map pack.
+
+    Attributes:
+        pack_id: Unique pack identifier.
+        name: Pack name.
+        levels: Comma-separated level IDs.
+        stars: Stars rewarded for completion.
+        coins: Coins rewarded for completion.
+        difficulty: Pack difficulty (0-10).
+        text_color: RGB color for title text.
+        bar_color: RGB color for completion bar.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    pack_id: int = Field(alias="1")
+    name: str = Field(alias="2")
+    levels: str = Field(alias="3")
+    stars: int = Field(default=0, alias="4")
+    coins: int = Field(default=0, alias="5")
+    difficulty: int = Field(default=0, alias="6")
+    text_color: str = Field(default="255,255,255", alias="7")
+    bar_color: str = Field(default="255,255,255", alias="8")
+
+    @property
+    def level_ids(self) -> list[int]:
+        """Get list of level IDs as integers."""
+        return [int(lvl) for lvl in self.levels.split(",") if lvl]
+
+
+class DailyLevel(BaseModel):
+    """Represents daily/weekly level info.
+
+    Attributes:
+        index: Current daily/weekly level index.
+        time_left: Seconds until next level.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    index: int = Field(default=0)
+    time_left: int = Field(default=0)
+
+
+class TopArtist(BaseModel):
+    """Represents a top artist.
+
+    Attributes:
+        name: Artist name.
+        youtube: YouTube channel (optional).
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    name: str = Field(alias="4")
+    youtube: str | None = Field(default=None, alias="7")

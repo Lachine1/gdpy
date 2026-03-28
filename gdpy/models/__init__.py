@@ -1,16 +1,20 @@
 from gdpy.models.user import (
     Comment,
+    DailyLevel,
     DemonDifficulty,
     EpicRating,
     FriendRequest,
+    Gauntlet,
     LeaderboardScore,
     Level,
     LevelDifficulty,
     LevelLength,
+    MapPack,
     Message,
     MessageState,
     ModLevel,
     Song,
+    TopArtist,
     User,
 )
 
@@ -28,4 +32,8 @@ __all__ = [
     "DemonDifficulty",
     "LevelLength",
     "EpicRating",
+    "Gauntlet",
+    "MapPack",
+    "DailyLevel",
+    "TopArtist",
 ]
