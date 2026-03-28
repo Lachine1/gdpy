@@ -470,7 +470,4 @@ Both clients have the same API, but `AsyncClient` methods are async (use `await`
 
 - Check out the [API Reference](api/client.md) for detailed documentation
 - See [Examples](examples.md) for more usage patterns
-
----
-
-**Credits:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
+- View [API Coverage](api-coverage.md) to see implemented endpoints

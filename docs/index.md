@@ -4,13 +4,28 @@ A modern, type-safe Python library for interacting with the Geometry Dash privat
 
 ## Features
 
-- 🔄 **Sync & Async** - Both synchronous (`Client`) and asynchronous (`AsyncClient`) interfaces
-- 🚀 **Modern HTTP** - Built with `httpx` for both sync and async operations
-- 🎯 **Type-safe** - Full type hints with runtime validation via Pydantic
-- 📦 **Well-structured** - Clean, pythonic API design
-- 🔐 **Built-in crypto** - XOR cipher, GJP2 encoding, base64 utilities, and checksums
-- ⚠️ **Comprehensive errors** - Full exception hierarchy for different error scenarios
-- 📖 **Well-documented** - Docstrings and examples for all public APIs
+- :arrows_counterclockwise: **Sync & Async** - Both synchronous (`Client`) and asynchronous (`AsyncClient`) interfaces
+- :rocket: **Modern HTTP** - Built with `httpx` for both sync and async operations
+- :dart: **Type-safe** - Full type hints with runtime validation via Pydantic
+- :package: **Well-structured** - Clean, pythonic API design
+- :lock: **Built-in crypto** - XOR cipher, GJP2 encoding, base64 utilities, and checksums
+- :warning: **Comprehensive errors** - Full exception hierarchy for different error scenarios
+- :book: **Well-documented** - Docstrings and examples for all public APIs
+
+## API Coverage
+
+| Category | Implemented | Total | Coverage |
+| :--- | :---: | :---: | :---: |
+| Authentication | 2 | 2 | 100% |
+| Users | 4 | 4 | 100% |
+| Levels | 4 | 13 | 31% |
+| Comments | 1 | 7 | 14% |
+| Songs | 1 | 3 | 33% |
+| Social | 0 | 8 | 0% |
+| Messages | 0 | 4 | 0% |
+| **Total** | **12** | **43** | **28%** |
+
+See [API Coverage](api-coverage.md) for detailed endpoint status.
 
 ## Installation
 
@@ -56,26 +71,6 @@ pip install gdpy
 
     asyncio.run(main())
     ```
-
-### Asynchronous Usage
-
-```python
-import asyncio
-from gdpy import AsyncClient
-
-async def main():
-    async with AsyncClient() as client:
-        # Get user info
-        user = await client.get_user(account_id=71)
-        print(f"Username: {user.username}")
-
-        # Search levels
-        levels = await client.search_levels(query="ReTraY", limit=5)
-        for level in levels:
-            print(f"{level.name}")
-
-asyncio.run(main())
-```
 
 ## Requirements
 
