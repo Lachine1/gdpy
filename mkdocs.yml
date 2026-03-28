@@ -1,0 +1,61 @@
+site_name: gdpy
+site_description: A modern Python client for the Geometry Dash API
+site_url: https://lachine1.github.io/gdpy
+repo_url: https://github.com/Lachine1/gdpy
+repo_name: Lachine1/gdpy
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API Reference:
+    - Client: api/client.md
+    - Models: api/models.md
+    - Exceptions: api/exceptions.md
+    - Crypto: api/crypto.md
+  - Examples: examples.md
+
+plugins:
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [gdpy]
+          options:
+            docstring_style: google
+            show_source: true
+            show_signature_annotations: true
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
