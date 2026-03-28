@@ -7,10 +7,10 @@ any gdpy-related exception with a single except clause.
 
 class GDError(Exception):
     """Base exception for all gdpy errors.
-    
+
     All exceptions in gdpy inherit from this class, allowing you to
     catch any gdpy-related error with a single except clause.
-    
+
     Example:
         ```python
         try:
@@ -25,7 +25,7 @@ class GDError(Exception):
 
 class RequestError(GDError):
     """Base exception for request-related errors.
-    
+
     This is the parent class for errors that occur during API requests,
     including authentication errors, rate limiting, and not found errors.
     """

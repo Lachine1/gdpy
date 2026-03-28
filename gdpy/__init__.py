@@ -1,4 +1,4 @@
-from gdpy.client import Client
+from gdpy.client import AsyncClient, Client
 from gdpy.exceptions import (
     AccountDisabledError,
     AuthError,
@@ -19,6 +19,7 @@ from gdpy.models import Comment, FriendRequest, LeaderboardScore, Level, Message
 
 __all__ = [
     "Client",
+    "AsyncClient",
     "User",
     "Level",
     "Comment",

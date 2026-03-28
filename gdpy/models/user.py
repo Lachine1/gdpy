@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 class ModLevel(IntEnum):
     """Moderator level for a user.
-    
+
     Attributes:
         NONE: Not a moderator.
         MODERATOR: Regular moderator (yellow badge).
@@ -26,7 +26,7 @@ class ModLevel(IntEnum):
 
 class MessageState(IntEnum):
     """Message privacy settings.
-    
+
     Attributes:
         ALL: Anyone can send messages.
         FRIENDS_ONLY: Only friends can send messages.
@@ -40,10 +40,10 @@ class MessageState(IntEnum):
 
 class User(BaseModel):
     """Represents a Geometry Dash user profile.
-    
+
     Contains all information about a user including stats, icons,
     social links, and moderation status.
-    
+
     Attributes:
         username: The user's display name.
         user_id: The user's ID (different from account ID).
@@ -72,7 +72,7 @@ class User(BaseModel):
         friend_state: Friend request setting.
         comment_history_state: Comment history visibility.
         global_rank: Global leaderboard rank (if on leaderboard).
-    
+
     Example:
         ```python
         user = await client.get_user(account_id=71)
@@ -125,7 +125,7 @@ class User(BaseModel):
 
 class LevelDifficulty(IntEnum):
     """Level difficulty rating.
-    
+
     Attributes:
         UNSPECIFIED: No difficulty specified.
         AUTO: Auto level (no skill required).
@@ -149,7 +149,7 @@ class LevelDifficulty(IntEnum):
 
 class DemonDifficulty(IntEnum):
     """Demon level difficulty rating.
-    
+
     Attributes:
         EASY: Easy demon.
         MEDIUM: Medium demon.
@@ -167,7 +167,7 @@ class DemonDifficulty(IntEnum):
 
 class LevelLength(IntEnum):
     """Level length classification.
-    
+
     Attributes:
         TINY: Very short level.
         SHORT: Short level.
@@ -185,7 +185,7 @@ class LevelLength(IntEnum):
 
 class EpicRating(IntEnum):
     """Level epic/featured rating.
-    
+
     Attributes:
         NONE: Not epic rated.
         EPIC: Epic rating.
@@ -201,10 +201,10 @@ class EpicRating(IntEnum):
 
 class Level(BaseModel):
     """Represents a Geometry Dash level.
-    
+
     Contains all information about a level including stats, difficulty,
     and audio information.
-    
+
     Attributes:
         level_id: Unique level identifier.
         name: Level name.
@@ -228,7 +228,7 @@ class Level(BaseModel):
         demon_difficulty: Demon difficulty (if demon).
         epic_rating: Epic/legendary/mythic rating.
         password: Level password (if copyable).
-    
+
     Example:
         ```python
         level = await client.get_level(level_id=3009486)
@@ -283,7 +283,7 @@ class Level(BaseModel):
 
 class Comment(BaseModel):
     """Represents a level or profile comment.
-    
+
     Attributes:
         comment_id: Unique comment identifier.
         level_id: ID of the level (for level comments).
@@ -307,7 +307,7 @@ class Comment(BaseModel):
 
 class Song(BaseModel):
     """Represents a custom song from Newgrounds.
-    
+
     Attributes:
         song_id: Unique song identifier.
         name: Song name.
@@ -327,7 +327,7 @@ class Song(BaseModel):
 
 class Message(BaseModel):
     """Represents a private message.
-    
+
     Attributes:
         message_id: Unique message identifier.
         subject: Message subject line.
@@ -349,7 +349,7 @@ class Message(BaseModel):
 
 class FriendRequest(BaseModel):
     """Represents a friend request.
-    
+
     Attributes:
         request_id: Unique request identifier.
         from_user: Sender's username.
@@ -371,7 +371,7 @@ class FriendRequest(BaseModel):
 
 class LeaderboardScore(BaseModel):
     """Represents a leaderboard entry.
-    
+
     Attributes:
         rank: Global rank position.
         username: Player's username.
