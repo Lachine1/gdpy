@@ -205,3 +205,9 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Test account credentials
+tests/.test_account.json
+
+# Development files
+PRD.md
