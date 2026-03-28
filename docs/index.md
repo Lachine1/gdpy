@@ -20,22 +20,42 @@ pip install gdpy
 
 ## Quick Start
 
-### Synchronous Usage
+=== "Synchronous"
 
-```python
-from gdpy import Client
+    ```python
+    from gdpy import Client
 
-with Client() as client:
-    # Get user info
-    user = client.get_user(account_id=71)  # RobTop
-    print(f"Username: {user.username}")
-    print(f"Stars: {user.stars}")
+    with Client() as client:
+        # Get user info
+        user = client.get_user(account_id=71) # RobTop
+        print(f"Username: {user.username}")
+        print(f"Stars: {user.stars}")
 
-    # Search levels
-    levels = client.search_levels(query="ReTraY", limit=5)
-    for level in levels:
-        print(f"{level.name} - {level.downloads} downloads")
-```
+        # Search levels
+        levels = client.search_levels(query="ReTraY", limit=5)
+        for level in levels:
+            print(f"{level.name} - {level.downloads} downloads")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            # Get user info
+            user = await client.get_user(account_id=71)
+            print(f"Username: {user.username}")
+
+            # Search levels
+            levels = await client.search_levels(query="ReTraY", limit=5)
+            for level in levels:
+                print(f"{level.name}")
+
+    asyncio.run(main())
+    ```
 
 ### Asynchronous Usage
 

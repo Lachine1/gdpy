@@ -31,176 +31,281 @@ Both clients have the same API, but `AsyncClient` methods are async (use `await`
 
 ## Basic Usage
 
-### Synchronous Client
+=== "Synchronous"
 
-```python
-from gdpy import Client
+    ```python
+    from gdpy import Client
 
-with Client() as client:
-    user = client.get_user(account_id=71)
-    print(f"Username: {user.username}")
-```
-
-### Asynchronous Client
-
-```python
-import asyncio
-from gdpy import AsyncClient
-
-async def main():
-    async with AsyncClient() as client:
-        user = await client.get_user(account_id=71)
+    with Client() as client:
+        user = client.get_user(account_id=71)
         print(f"Username: {user.username}")
+    ```
 
-asyncio.run(main())
-```
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            user = await client.get_user(account_id=71)
+            print(f"Username: {user.username}")
+
+    asyncio.run(main())
+    ```
 
 ## User Operations
 
 ### Get User by ID
 
-```python
-# Sync
-with Client() as client:
-    user = client.get_user(account_id=71)
-    print(f"Username: {user.username}")
-    print(f"Stars: {user.stars}")
+=== "Synchronous"
 
-# Async
-async with AsyncClient() as client:
-    user = await client.get_user(account_id=71)
-    print(f"Username: {user.username}")
-```
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        user = client.get_user(account_id=71)
+        print(f"Username: {user.username}")
+        print(f"Stars: {user.stars}")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            user = await client.get_user(account_id=71)
+            print(f"Username: {user.username}")
+            print(f"Stars: {user.stars}")
+
+    asyncio.run(main())
+    ```
 
 ### Search Users
 
-```python
-# Sync
-with Client() as client:
-    users = client.search_users(query="RobTop")
-    for user in users:
-        print(f"{user.username} (ID: {user.account_id})")
+=== "Synchronous"
 
-# Async
-async with AsyncClient() as client:
-    users = await client.search_users(query="RobTop")
-    for user in users:
-        print(user.username)
-```
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        users = client.search_users(query="RobTop")
+        for user in users:
+            print(f"{user.username} (ID: {user.account_id})")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            users = await client.search_users(query="RobTop")
+            for user in users:
+                print(f"{user.username} (ID: {user.account_id})")
+
+    asyncio.run(main())
+    ```
 
 ## Level Operations
 
 ### Search Levels
 
-```python
-# Sync
-with Client() as client:
-    levels = client.search_levels(query="Bloodbath", limit=10)
-    for level in levels:
-        print(f"{level.name} - {level.downloads} downloads")
+=== "Synchronous"
 
-# Async
-async with AsyncClient() as client:
-    levels = await client.search_levels(query="Bloodbath", limit=10)
-    for level in levels:
-        print(level.name)
-```
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        levels = client.search_levels(query="Bloodbath", limit=10)
+        for level in levels:
+            print(f"{level.name} - {level.downloads} downloads")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            levels = await client.search_levels(query="Bloodbath", limit=10)
+            for level in levels:
+                print(f"{level.name} - {level.downloads} downloads")
+
+    asyncio.run(main())
+    ```
 
 ### Get Level by ID
 
-```python
-# Sync
-with Client() as client:
-    level = client.get_level(level_id=3009486)  # ReTraY
-    print(f"Name: {level.name}")
-    print(f"Objects: {level.objects}")
+=== "Synchronous"
 
-# Async
-async with AsyncClient() as client:
-    level = await client.get_level(level_id=3009486)
-    print(f"Name: {level.name}")
-```
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        level = client.get_level(level_id=3009486) # ReTraY
+        print(f"Name: {level.name}")
+        print(f"Objects: {level.objects}")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            level = await client.get_level(level_id=3009486)
+            print(f"Name: {level.name}")
+            print(f"Objects: {level.objects}")
+
+    asyncio.run(main())
+    ```
 
 ### Paginated Search
 
-```python
-# Sync
-with Client() as client:
-    for page in range(3):
-        levels = client.search_levels(query="", limit=10, page=page)
-        print(f"Page {page}: {len(levels)} levels")
+=== "Synchronous"
 
-# Async
-async with AsyncClient() as client:
-    for page in range(3):
-        levels = await client.search_levels(query="", limit=10, page=page)
-        print(f"Page {page}: {len(levels)} levels")
-```
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        for page in range(3):
+            levels = client.search_levels(query="", limit=10, page=page)
+            print(f"Page {page}: {len(levels)} levels")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            for page in range(3):
+                levels = await client.search_levels(query="", limit=10, page=page)
+                print(f"Page {page}: {len(levels)} levels")
+
+    asyncio.run(main())
+    ```
 
 ## Authentication
 
 ### Login
 
-```python
-# Sync
-from gdpy import Client
-from gdpy.exceptions import InvalidCredentialsError
+=== "Synchronous"
 
-with Client() as client:
-    try:
-        if client.login("username", "password"):
-            print(f"Logged in as {client.username}")
-    except InvalidCredentialsError:
-        print("Invalid credentials")
+    ```python
+    from gdpy import Client
+    from gdpy.exceptions import InvalidCredentialsError
 
-# Async
-async with AsyncClient() as client:
-    try:
-        if await client.login("username", "password"):
-            print(f"Logged in as {client.username}")
-    except InvalidCredentialsError:
-        print("Invalid credentials")
-```
+    with Client() as client:
+        try:
+            if client.login("username", "password"):
+                print(f"Logged in as {client.username}")
+        except InvalidCredentialsError:
+            print("Invalid credentials")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+    from gdpy.exceptions import InvalidCredentialsError
+
+    async def main():
+        async with AsyncClient() as client:
+            try:
+                if await client.login("username", "password"):
+                    print(f"Logged in as {client.username}")
+            except InvalidCredentialsError:
+                print("Invalid credentials")
+
+    asyncio.run(main())
+    ```
 
 ### Register
 
-```python
-# Sync
-from gdpy import Client
-from gdpy.exceptions import UsernameTakenError
+=== "Synchronous"
 
-with Client() as client:
-    try:
-        if client.register("newuser", "password123", "user@email.com"):
-            print("Account created!")
-    except UsernameTakenError:
-        print("Username taken")
+    ```python
+    from gdpy import Client
+    from gdpy.exceptions import UsernameTakenError
 
-# Async
-async with AsyncClient() as client:
-    try:
-        if await client.register("newuser", "password123", "user@email.com"):
-            print("Account created!")
-    except UsernameTakenError:
-        print("Username taken")
-```
+    with Client() as client:
+        try:
+            if client.register("newuser", "password123", "user@email.com"):
+                print("Account created!")
+        except UsernameTakenError:
+            print("Username taken")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+    from gdpy.exceptions import UsernameTakenError
+
+    async def main():
+        async with AsyncClient() as client:
+            try:
+                if await client.register("newuser", "password123", "user@email.com"):
+                    print("Account created!")
+            except UsernameTakenError:
+                print("Username taken")
+
+    asyncio.run(main())
+    ```
 
 ## Error Handling
 
-```python
-from gdpy import Client
-from gdpy.exceptions import GDError, NotFoundError, InvalidRequestError
+=== "Synchronous"
 
-with Client() as client:
-    try:
-        user = client.get_user(account_id=999999999)
-    except NotFoundError:
-        print("User not found!")
-    except InvalidRequestError:
-        print("Rate limited or invalid request")
-    except GDError as e:
-        print(f"Error: {e}")
-```
+    ```python
+    from gdpy import Client
+    from gdpy.exceptions import GDError, NotFoundError, InvalidRequestError
+
+    with Client() as client:
+        try:
+            user = client.get_user(account_id=999999999)
+        except NotFoundError:
+            print("User not found!")
+        except InvalidRequestError:
+            print("Rate limited or invalid request")
+        except GDError as e:
+            print(f"Error: {e}")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+    from gdpy.exceptions import GDError, NotFoundError, InvalidRequestError
+
+    async def main():
+        async with AsyncClient() as client:
+            try:
+                user = await client.get_user(account_id=999999999)
+            except NotFoundError:
+                print("User not found!")
+            except GDError as e:
+                print(f"Error: {e}")
+
+    asyncio.run(main())
+    ```
 
 ## Which Client Should I Use?
 

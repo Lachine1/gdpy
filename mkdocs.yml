@@ -43,6 +43,16 @@ nav:
 
 plugins:
   - search
+  - autorefs
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
   - mkdocstrings:
       handlers:
         python:
@@ -60,3 +70,5 @@ markdown_extensions:
   - pymdownx.superfences
   - admonition
   - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
