@@ -65,3 +65,78 @@ class TestLevelEndpoints:
         levels = await client.search_levels(query="ReTraY", limit=1)
         if levels:
             assert levels[0].name != ""
+
+    @pytest.mark.asyncio
+    async def test_get_level_by_id(self, client: AsyncClient):
+        try:
+            level = await client.get_level(level_id=3009486)  # ReTraY
+            assert level.level_id == 3009486
+            assert level.name != ""
+            assert level.objects > 0
+        except InvalidRequestError:
+            pytest.skip("Rate limited by server")
+
+
+class TestSongEndpoints:
+    @pytest.mark.asyncio
+    async def test_get_song(self, client: AsyncClient):
+        song = await client.get_song(song_id=803223)  # Xtrullor - Arcana
+        assert song.song_id == 803223
+        assert song.name != ""
+        assert song.author != ""
+
+    @pytest.mark.asyncio
+    async def test_song_has_download_url(self, client: AsyncClient):
+        song = await client.get_song(song_id=803223)
+        assert song.download_url != ""
+
+
+class TestCommentEndpoints:
+    @pytest.mark.asyncio
+    async def test_get_level_comments(self, client: AsyncClient):
+        comments = await client.get_level_comments(level_id=3009486, limit=5)
+        assert isinstance(comments, list)
+
+    @pytest.mark.asyncio
+    async def test_comment_has_content(self, client: AsyncClient):
+        comments = await client.get_level_comments(level_id=3009486, limit=5)
+        if comments:
+            assert comments[0].content != ""
+            assert comments[0].author != ""
+
+
+class TestLeaderboardEndpoints:
+    @pytest.mark.asyncio
+    async def test_get_leaderboard(self, client: AsyncClient):
+        leaderboard = await client.get_leaderboard(limit=10)
+        assert isinstance(leaderboard, list)
+        assert len(leaderboard) > 0
+
+    @pytest.mark.asyncio
+    async def test_leaderboard_entry_has_username(self, client: AsyncClient):
+        leaderboard = await client.get_leaderboard(limit=5)
+        if leaderboard:
+            assert leaderboard[0].username != ""
+            assert leaderboard[0].stars > 0
+
+    @pytest.mark.asyncio
+    async def test_get_creator_leaderboard(self, client: AsyncClient):
+        creators = await client.get_leaderboard(limit=10, type="creators")
+        assert isinstance(creators, list)
+        if creators:
+            assert creators[0].username != ""
+
+
+class TestUserLevelEndpoints:
+    @pytest.mark.asyncio
+    async def test_get_user_levels(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)  # RobTop
+        levels = await client.get_user_levels(user_id=user.user_id, limit=5)
+        assert isinstance(levels, list)
+
+    @pytest.mark.asyncio
+    async def test_user_level_has_name(self, client: AsyncClient):
+        user = await client.get_user(account_id=71)
+        levels = await client.get_user_levels(user_id=user.user_id, limit=5)
+        if levels:
+            assert levels[0].name != ""

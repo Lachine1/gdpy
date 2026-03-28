@@ -62,6 +62,36 @@ This page contains various usage examples for gdpy.
     asyncio.run(main())
     ```
 
+### Get User's Created Levels
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        user = client.get_user(account_id=71)  # RobTop
+        levels = client.get_user_levels(user_id=user.user_id, limit=10)
+        for level in levels:
+            print(f"{level.name} - {level.downloads:,} downloads")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            user = await client.get_user(account_id=71)
+            levels = await client.get_user_levels(user_id=user.user_id, limit=10)
+            for level in levels:
+                print(f"{level.name} - {level.downloads:,} downloads")
+
+    asyncio.run(main())
+    ```
+
 ## Level Operations
 
 ### Search Levels
@@ -517,6 +547,126 @@ This page contains various usage examples for gdpy.
             # Rating
             print(f"Stars: {level.stars}")
             print(f"Epic Rating: {level.epic_rating.name}")
+
+    asyncio.run(main())
+    ```
+
+## Songs
+
+### Get Song Info
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        song = client.get_song(song_id=803223)  # Xtrullor - Arcana
+        print(f"Song: {song.name}")
+        print(f"Artist: {song.author}")
+        print(f"Size: {song.size} MB")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            song = await client.get_song(song_id=803223)
+            print(f"Song: {song.name}")
+            print(f"Artist: {song.author}")
+
+    asyncio.run(main())
+    ```
+
+## Comments
+
+### Get Level Comments
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        comments = client.get_level_comments(level_id=3009486, limit=10)
+        for comment in comments:
+            print(f"{comment.author}: {comment.content}")
+            print(f"  Likes: {comment.likes}")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            comments = await client.get_level_comments(level_id=3009486, limit=10)
+            for comment in comments:
+                print(f"{comment.author}: {comment.content}")
+
+    asyncio.run(main())
+    ```
+
+## Leaderboards
+
+### Global Leaderboard
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        leaderboard = client.get_leaderboard(limit=10)
+        for i, entry in enumerate(leaderboard, 1):
+            print(f"#{i}: {entry.username} - {entry.stars} stars")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            leaderboard = await client.get_leaderboard(limit=10)
+            for i, entry in enumerate(leaderboard, 1):
+                print(f"#{i}: {entry.username} - {entry.stars} stars")
+
+    asyncio.run(main())
+    ```
+
+### Creator Leaderboard
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    with Client() as client:
+        creators = client.get_leaderboard(limit=10, type="creators")
+        for i, entry in enumerate(creators, 1):
+            print(f"#{i}: {entry.username} - {entry.creator_points} CP")
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        async with AsyncClient() as client:
+            creators = await client.get_leaderboard(limit=10, type="creators")
+            for i, entry in enumerate(creators, 1):
+                print(f"#{i}: {entry.username} - {entry.creator_points} CP")
 
     asyncio.run(main())
     ```
