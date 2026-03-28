@@ -75,8 +75,9 @@ class TestLevelEndpoints:
     @pytest.mark.asyncio
     async def test_get_level_by_id(self, client: AsyncClient):
         try:
-            level = await client.get_level(level_id=3009486)  # ReTraY
-            assert level.level_id == 3009486
+            await asyncio.sleep(2)
+            level = await client.get_level(level_id=128)  # 1st level
+            assert level.level_id == 128
             assert level.name != ""
             assert level.objects > 0
         except InvalidRequestError:
@@ -100,12 +101,14 @@ class TestSongEndpoints:
 class TestCommentEndpoints:
     @pytest.mark.asyncio
     async def test_get_level_comments(self, client: AsyncClient):
-        comments = await client.get_level_comments(level_id=3009486, limit=5)
+        await asyncio.sleep(1)
+        comments = await client.get_level_comments(level_id=128, limit=5)
         assert isinstance(comments, list)
 
     @pytest.mark.asyncio
     async def test_comment_has_content(self, client: AsyncClient):
-        comments = await client.get_level_comments(level_id=3009486, limit=5)
+        await asyncio.sleep(1)
+        comments = await client.get_level_comments(level_id=128, limit=5)
         if comments:
             assert comments[0].content != ""
             assert comments[0].author != ""
