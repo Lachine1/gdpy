@@ -30,10 +30,15 @@ theme:
     - search.suggest
     - search.highlight
     - content.code.copy
+    - content.code.annotate
+    - content.tooltips
+    - header.autohide
+    - toc.follow
 
 nav:
   - Home: index.md
   - Getting Started: getting-started.md
+  - API Coverage: api-coverage.md
   - API Reference:
     - Client: api/client.md
     - Models: api/models.md
@@ -53,6 +58,7 @@ plugins:
       minify_css: true
       htmlmin_opts:
         remove_comments: true
+  - open-in-new-tab
   - mkdocstrings:
       handlers:
         python:
@@ -63,6 +69,9 @@ plugins:
             show_signature_annotations: true
 
 markdown_extensions:
+  - toc:
+      permalink: true
+      permalink_title: Link to this section
   - pymdownx.highlight:
       anchor_linenums: true
   - pymdownx.inlinehilite
@@ -72,3 +81,9 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - footnotes
