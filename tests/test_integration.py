@@ -149,3 +149,32 @@ class TestUserLevelEndpoints:
         levels = await client.get_user_levels(user_id=user.user_id, limit=5)
         if levels:
             assert levels[0].name != ""
+
+
+class TestSearchAndFetch:
+    @pytest.mark.asyncio
+    async def test_search_and_get_level(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        levels = await client.search_levels(query="ReTraY", limit=5)
+        assert len(levels) > 0
+        
+        first_level = levels[0]
+        await asyncio.sleep(2)
+        fetched_level = await client.get_level(level_id=first_level.level_id)
+        
+        assert fetched_level.level_id == first_level.level_id
+        assert fetched_level.name != ""
+        assert fetched_level.objects > 0
+
+    @pytest.mark.asyncio
+    async def test_fetch_leaderboard_top_user(self, client: AsyncClient):
+        await asyncio.sleep(1)
+        leaderboard = await client.get_leaderboard(limit=10)
+        assert len(leaderboard) > 0
+        
+        top_user = leaderboard[0]
+        await asyncio.sleep(2)
+        user = await client.get_user(account_id=top_user.account_id)
+        
+        assert user.username == top_user.username
+        assert user.stars > 0
