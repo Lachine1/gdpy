@@ -42,6 +42,7 @@ nav:
   - Examples: examples.md
 
 plugins:
+  - search
   - mkdocstrings:
       handlers:
         python:

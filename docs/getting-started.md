@@ -2,8 +2,6 @@
 
 This guide will help you get started with gdpy.
 
-**Note:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
-
 ## Installation
 
 ### Basic Installation
@@ -222,3 +220,7 @@ with Client() as client:
 
 - Check out the [API Reference](api/client.md) for detailed documentation
 - See [Examples](examples.md) for more usage patterns
+
+---
+
+**Credits:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).

@@ -2,8 +2,6 @@
 
 A modern, type-safe Python library for interacting with the Geometry Dash private API.
 
-**Based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs)** - This library is built following the official API documentation maintained at [gd-docs](https://github.com/Rifct/gd-docs).
-
 ## Features
 
 - 🔄 **Sync & Async** - Both synchronous (`Client`) and asynchronous (`AsyncClient`) interfaces
@@ -65,10 +63,10 @@ asyncio.run(main())
 - `httpx` - HTTP client (supports both sync and async)
 - `pydantic` - Data validation
 
-## Credits
-
-This library is based on the excellent [Geometry Dash API documentation](https://github.com/Rifct/gd-docs) by the community.
-
 ## License
 
 MIT
+
+---
+
+**Credits:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).

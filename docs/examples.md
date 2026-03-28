@@ -2,8 +2,6 @@
 
 This page contains various usage examples for gdpy.
 
-**Note:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
-
 ## Sync vs Async
 
 gdpy provides two client classes:
@@ -268,3 +266,7 @@ async def fetch_multiple_users():
 
 asyncio.run(fetch_multiple_users())
 ```
+
+---
+
+**Credits:** This library is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
