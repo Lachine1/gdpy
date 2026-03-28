@@ -2,6 +2,7 @@ import os
 import json
 import pytest
 import pytest_asyncio
+import asyncio
 from gdpy import AsyncClient
 from gdpy.exceptions import InvalidRequestError, InvalidCredentialsError
 
@@ -12,6 +13,11 @@ TEST_ACCOUNT_FILE = "tests/.test_account.json"
 async def client():
     async with AsyncClient() as client:
         yield client
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def rate_limit_delay():
+    await asyncio.sleep(1.0)
 
 
 class TestAuthentication:
