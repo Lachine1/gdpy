@@ -1073,16 +1073,6 @@ class Client:
         response = self._request("deleteGJAccComment20.php", data)
         return response == "1"
 
-    def get_save_data(self) -> str | None:
-        """Get save data. Returns empty as of 2.2.
-
-        Returns:
-            Save data string or None if empty.
-        """
-        data = {"secret": Secrets.COMMON}
-        response = self._request("getSaveData.php", data)
-        return response if response else None
-
     def get_challenges(self) -> DailyChallenges:
         """Get daily challenges/quests. Requires authentication."""
 
@@ -2041,12 +2031,6 @@ class AsyncClient:
         }
         response = await self._request("deleteGJAccComment20.php", data)
         return response == "1"
-
-    async def get_save_data(self) -> str | None:
-        """Get save data. Returns empty as of 2.2."""
-        data = {"secret": Secrets.COMMON}
-        response = await self._request("getSaveData.php", data)
-        return response if response else None
 
     async def get_challenges(self) -> DailyChallenges:
         """Get daily challenges/quests. Requires authentication."""

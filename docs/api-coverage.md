@@ -15,8 +15,8 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Messages | 4 | 4 | 100% |
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
-| Misc | 3 | 3 | 100% |
-| **Total** | **48** | **61** | **79%** |
+| Misc | 2 | 2 | 100% |
+| **Total** | **47** | **60** | **78%** |
 
 ## Legend
 
@@ -142,7 +142,6 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
-| `getSaveData.php` | `get_save_data()` | :white_check_mark: | Returns empty as of 2.2 |
 | `getTop1000.php` | `get_top_1000()` | :white_check_mark: | Get top 1000 users |
 | `likeGJItem211.php` | `like_level()`, `like_comment()` | :white_check_mark: | Like an item (requires auth) |
 
