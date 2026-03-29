@@ -540,6 +540,52 @@ class Client:
             comments.append(Comment.model_validate(comment_data))
         return comments
 
+    def get_top_1000(self, limit: int = 100, page: int = 0) -> list[User]:
+        """Get top 1000 users by stars.
+
+        Args:
+            limit: Maximum number of users to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of User objects.
+        """
+        data = {"type": "top", "count": str(limit), "page": str(page)}
+        response = self._request("getTop1000.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    def test_song(self, song_id: int) -> bool:
+        """Test if a custom song is available.
+
+        Args:
+            song_id: The song ID to test.
+
+        Returns:
+            True if song is available, False otherwise.
+        """
+        data = {"songID": str(song_id)}
+        response = self._request("testSong.php", data)
+        return not response.startswith("-")
+
+    def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict]:
+        """Get level lists (user-created lists of levels).
+
+        Args:
+            limit: Maximum number of lists to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of level list dictionaries.
+        """
+        data = {"type": "0", "str": "", "total": str(limit), "page": str(page)}
+        response = self._request("getGJLevelLists.php", data)
+        if response.startswith("-"):
+            return []
+        return parse_list_response(response)
+
     def get_messages(self, limit: int = 10, page: int = 0, sent: bool = False) -> list[Message]:
         """Get inbox or sent messages. Requires authentication.
 
@@ -1527,6 +1573,52 @@ class AsyncClient:
                 comment_data["username"] = user_data.get("1", "")
                 comments.append(Comment.model_validate(comment_data))
         return comments
+
+    async def get_top_1000(self, limit: int = 100, page: int = 0) -> list[User]:
+        """Get top 1000 users by stars.
+
+        Args:
+            limit: Maximum number of users to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of User objects.
+        """
+        data = {"type": "top", "count": str(limit), "page": str(page)}
+        response = await self._request("getTop1000.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    async def test_song(self, song_id: int) -> bool:
+        """Test if a custom song is available.
+
+        Args:
+            song_id: The song ID to test.
+
+        Returns:
+            True if song is available, False otherwise.
+        """
+        data = {"songID": str(song_id)}
+        response = await self._request("testSong.php", data)
+        return not response.startswith("-")
+
+    async def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict]:
+        """Get level lists (user-created lists of levels).
+
+        Args:
+            limit: Maximum number of lists to return.
+            page: Page number for pagination.
+
+        Returns:
+            List of level list dictionaries.
+        """
+        data = {"type": "0", "str": "", "total": str(limit), "page": str(page)}
+        response = await self._request("getGJLevelLists.php", data)
+        if response.startswith("-"):
+            return []
+        return parse_list_response(response)
 
     async def get_messages(
         self, limit: int = 10, page: int = 0, sent: bool = False

@@ -9,14 +9,14 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Accounts | 2 | 5 | 40% |
 | Users | 3 | 4 | 75% |
 | Levels | 6 | 14 | 43% |
-| Comments | 3 | 7 | 43% |
-| Songs | 2 | 6 | 33% |
-| Social | 0 | 12 | 0% |
-| Messages | 0 | 2 | 0% |
+| Comments | 7 | 7 | 100% |
+| Songs | 3 | 6 | 50% |
+| Social | 11 | 12 | 92% |
+| Messages | 4 | 4 | 100% |
 | Rewards | 0 | 3 | 0% |
-| Lists | 0 | 3 | 0% |
-| Misc | 0 | 6 | 0% |
-| **Total** | **16** | **62** | **26%** |
+| Lists | 1 | 3 | 33% |
+| Misc | 2 | 6 | 33% |
+| **Total** | **40** | **64** | **63%** |
 
 ## Legend
 
@@ -79,10 +79,10 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `getGJComments21.php` | `get_level_comments()` | :white_check_mark: | Get level comments |
 | `getGJAccountComments20.php` | `get_account_comments()` | :white_check_mark: | Get profile comments |
 | `getGJCommentHistory.php` | `get_comment_history()` | :white_check_mark: | Get user's comment history |
-| `uploadGJComment21.php` | - | :x: | Post level comment (requires auth) |
-| `uploadGJAccComment20.php` | - | :x: | Post profile comment (requires auth) |
-| `deleteGJComment20.php` | - | :x: | Delete level comment (requires auth) |
-| `deleteGJAccComment20.php` | - | :x: | Delete profile comment (requires auth) |
+| `uploadGJComment21.php` | `post_level_comment()` | :white_check_mark: | Post level comment (requires auth) |
+| `uploadGJAccComment20.php` | `post_profile_comment()` | :white_check_mark: | Post profile comment (requires auth) |
+| `deleteGJComment20.php` | `delete_level_comment()` | :white_check_mark: | Delete level comment (requires auth) |
+| `deleteGJAccComment20.php` | `delete_profile_comment()` | :white_check_mark: | Delete profile comment (requires auth) |
 
 ---
 
@@ -92,7 +92,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | :--- | :--- | :--- | :--- |
 | `getGJSongInfo.php` | `get_song()` | :white_check_mark: | Get song info by ID |
 | `getGJTopArtists.php` | `get_top_artists()` | :white_check_mark: | Get top artists |
-| `testSong.php` | - | :x: | Test song availability |
+| `testSong.php` | `test_song()` | :white_check_mark: | Test song availability |
 | `getCustomContentURL.php` | - | :x: | Get custom content URL |
 | `musiclibrary_02.dat` | - | :x: | Music library |
 | `sfxlibrary.dat` | - | :x: | SFX library |
@@ -103,18 +103,18 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
-| `getGJFriendRequests20.php` | - | :x: | Get friend requests (requires auth) |
-| `uploadFriendRequest20.php` | - | :x: | Send friend request (requires auth) |
-| `acceptGJFriendRequest20.php` | - | :x: | Accept friend request (requires auth) |
-| `deleteGJFriendRequests20.php` | - | :x: | Delete friend request (requires auth) |
+| `getGJFriendRequests20.php` | `get_friend_requests()` | :white_check_mark: | Get friend requests (requires auth) |
+| `uploadFriendRequest20.php` | `send_friend_request()` | :white_check_mark: | Send friend request (requires auth) |
+| `acceptGJFriendRequest20.php` | `accept_friend_request()` | :white_check_mark: | Accept friend request (requires auth) |
+| `deleteGJFriendRequests20.php` | `delete_friend_request()` | :white_check_mark: | Delete friend request (requires auth) |
 | `readGJFriendRequest20.php` | - | :x: | Mark friend request as read (requires auth) |
-| `removeGJFriend20.php` | - | :x: | Remove friend (requires auth) |
-| `getGJUserList20.php` | - | :x: | Get friends list (requires auth) |
-| `blockGJUser20.php` | - | :x: | Block user (requires auth) |
-| `unblockGJUser20.php` | - | :x: | Unblock user (requires auth) |
-| `getGJMessages20.php` | - | :x: | Get messages (requires auth) |
-| `downloadGJMessage20.php` | - | :x: | Download message content (requires auth) |
-| `uploadGJMessage20.php` | - | :x: | Send message (requires auth) |
+| `removeGJFriend20.php` | `remove_friend()` | :white_check_mark: | Remove friend (requires auth) |
+| `getGJUserList20.php` | `get_friends()`, `get_blocked_users()` | :white_check_mark: | Get friends/blocked list (requires auth) |
+| `blockGJUser20.php` | `block_user()` | :white_check_mark: | Block user (requires auth) |
+| `unblockGJUser20.php` | `unblock_user()` | :white_check_mark: | Unblock user (requires auth) |
+| `getGJMessages20.php` | `get_messages()` | :white_check_mark: | Get messages (requires auth) |
+| `downloadGJMessage20.php` | `get_message()` | :white_check_mark: | Download message content (requires auth) |
+| `uploadGJMessage20.php` | `send_message()` | :white_check_mark: | Send message (requires auth) |
 
 ---
 
@@ -132,7 +132,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
-| `getGJLevelLists.php` | - | :x: | Get level lists |
+| `getGJLevelLists.php` | `get_level_lists()` | :white_check_mark: | Get level lists |
 | `uploadGJLevelList.php` | - | :x: | Upload level list (requires auth) |
 | `deleteGJLevelList.php` | - | :x: | Delete level list (requires auth) |
 
@@ -144,8 +144,8 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | :--- | :--- | :--- | :--- |
 | `getAccountURL.php` | - | :x: | Get account server URL |
 | `getSaveData.php` | - | :x: | Get save data (requires auth) |
-| `getTop1000.php` | - | :x: | Get top 1000 users |
-| `likeGJItem211.php` | - | :x: | Like an item (requires auth) |
+| `getTop1000.php` | `get_top_1000()` | :white_check_mark: | Get top 1000 users |
+| `likeGJItem211.php` | `like_level()`, `like_comment()` | :white_check_mark: | Like an item (requires auth) |
 | `requestUserAccess.php` | - | :x: | Request user access |
 | `restoreGJItems.php` | - | :x: | Restore deleted items (requires auth) |
 
@@ -155,24 +155,26 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 ### Requires Authentication
 
+- [x] Post/delete comments
+- [x] Get/post profile comments
+- [x] Get friends list
+- [x] Send/accept friend requests
+- [x] Block/unblock users
+- [x] Get/read/send messages
+- [x] Like levels/comments
 - [ ] Upload/delete levels
 - [ ] Rate levels
-- [ ] Post/delete comments
-- [ ] Get/post profile comments
-- [ ] Get friends list
-- [ ] Send/accept friend requests
-- [ ] Block/unblock users
-- [ ] Get/read/send messages
 - [ ] Get quests/rewards
 - [ ] Get level leaderboard
 - [ ] Update user stats
 - [ ] Backup/sync account
+- [ ] Mark friend request as read
 
 ### No Auth Required (Lower Priority)
 
-- [ ] Test song availability
-- [ ] Get top 1000 users
-- [ ] Get level lists
+- [x] Test song availability
+- [x] Get top 1000 users
+- [x] Get level lists
 
 ---
 
