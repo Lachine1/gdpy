@@ -28,7 +28,7 @@ Raw requests require understanding GD's custom formats and encryption. gdpy abst
 | :--- | :---: | :---: | :---: |
 | Accounts | 3 | 5 | 60% |
 | Users | 4 | 4 | 100% |
-| Levels | 7 | 14 | 50% |
+| Levels | 7 | 11 | 64% |
 | Comments | 7 | 7 | 100% |
 | Songs | 3 | 6 | 50% |
 | Social | 12 | 12 | 100% |
@@ -36,7 +36,7 @@ Raw requests require understanding GD's custom formats and encryption. gdpy abst
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 2 | 100% |
-| **Total** | **45** | **60** | **75%** |
+| **Total** | **45** | **57** | **79%** |
 
 See [API Coverage](api-coverage.md) for detailed endpoint status.
 

@@ -8,7 +8,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | :--- | :---: | :---: | :---: |
 | Accounts | 3 | 5 | 60% |
 | Users | 4 | 4 | 100% |
-| Levels | 7 | 14 | 50% |
+| Levels | 7 | 11 | 64% |
 | Comments | 7 | 7 | 100% |
 | Songs | 3 | 6 | 50% |
 | Social | 12 | 12 | 100% |
@@ -16,7 +16,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 2 | 100% |
-| **Total** | **45** | **60** | **75%** |
+| **Total** | **45** | **57** | **79%** |
 
 ## Legend
 
@@ -63,9 +63,6 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `getGJMapPacks21.php` | `get_map_packs()` | :white_check_mark: | Get map packs |
 | `uploadGJLevel21.php` | - | :x: | Upload level (requires auth) |
 | `deleteGJLevelUser20.php` | - | :x: | Delete level (requires auth) |
-| `rateGJStars211.php` | - | :x: | Rate level stars (requires auth) |
-| `rateGJDemon21.php` | - | :x: | Rate demon difficulty (requires auth) |
-| `suggestGJStars20.php` | - | :x: | Suggest stars for level (requires auth) |
 | `reportGJLevel.php` | - | :x: | Report level (requires auth) |
 | `getGJLevelScores211.php` | `get_level_scores()` | :white_check_mark: | Get level leaderboard (requires auth) |
 | `updateGJDesc20.php` | `update_level_description()` | :white_check_mark: | Update level description (requires auth) |
