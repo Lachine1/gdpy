@@ -549,3 +549,93 @@ class TopArtist(BaseModel):
 
     name: str = Field(alias="4")
     youtube: str | None = Field(default=None, alias="7")
+
+
+class Quest(BaseModel):
+    """Represents a daily quest.
+
+    Attributes:
+        quest_type: Type of item needed (1: orbs, 2: coins, 3: stars).
+        amount: Amount of the item needed.
+        diamonds: Diamond reward for completing.
+        name: Quest name.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    quest_type: int = Field(default=0)
+    amount: int = Field(default=0)
+    diamonds: int = Field(default=0)
+    name: str = Field(default="")
+
+
+class ChestReward(BaseModel):
+    """Represents a chest reward.
+
+    Attributes:
+        orbs: Orbs rewarded.
+        diamonds: Diamonds rewarded.
+        item1: First item type (1: Fire, 2: Ice, etc.).
+        item2: Second item type.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    orbs: int = Field(default=0)
+    diamonds: int = Field(default=0)
+    item1: int = Field(default=0)
+    item2: int = Field(default=0)
+
+
+class DailyChallenges(BaseModel):
+    """Represents daily challenges/quests.
+
+    Attributes:
+        time_left: Seconds until quests reset.
+        quests: List of 3 daily quests.
+        quests_completed: Number of quests completed.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    time_left: int = Field(default=0)
+    quests: list[Quest] = Field(default_factory=list)
+    quests_completed: int = Field(default=0)
+
+
+class ChestInfo(BaseModel):
+    """Represents chest reward information.
+
+    Attributes:
+        small_time_left: Seconds until small chest is ready.
+        small_reward: Small chest rewards.
+        small_claimed: Number of small chests claimed.
+        large_time_left: Seconds until large chest is ready.
+        large_reward: Large chest rewards.
+        large_claimed: Number of large chests claimed.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    small_time_left: int = Field(default=0)
+    small_reward: ChestReward | None = Field(default=None)
+    small_claimed: int = Field(default=0)
+    large_time_left: int = Field(default=0)
+    large_reward: ChestReward | None = Field(default=None)
+    large_claimed: int = Field(default=0)
+
+
+class SecretReward(BaseModel):
+    """Represents a secret vault reward.
+
+    Attributes:
+        reward_id: The reward ID.
+        chest_type: Chest type (1: small, 2: large).
+        items: List of rewarded items.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    reward_id: int = Field(default=0, alias="reward_id")
+    chest_type: int = Field(default=1, alias="chest_type")
+    items: dict[str, int] = Field(default_factory=dict, alias="items")

@@ -7,7 +7,7 @@ https://github.com/Rifct/gd-docs
 import httpx
 
 from gdpy.constants import Secrets, URLs
-from gdpy.crypto import generate_gjp2
+from gdpy.crypto import decode_rewards_response, generate_gjp2, generate_rewards_chk
 from gdpy.exceptions import (
     AccountDisabledError,
     EmailTakenError,
@@ -20,7 +20,10 @@ from gdpy.exceptions import (
     UsernameTooShortError,
 )
 from gdpy.models import (
+    ChestInfo,
+    ChestReward,
     Comment,
+    DailyChallenges,
     DailyLevel,
     FriendRequest,
     Gauntlet,
@@ -28,6 +31,7 @@ from gdpy.models import (
     Level,
     MapPack,
     Message,
+    Quest,
     Song,
     TopArtist,
     User,
@@ -1069,6 +1073,131 @@ class Client:
         response = self._request("deleteGJAccComment20.php", data)
         return response == "1"
 
+    def get_save_data(self) -> str | None:
+        """Get save data. Returns empty as of 2.2.
+
+        Returns:
+            Save data string or None if empty.
+        """
+        data = {"secret": Secrets.COMMON}
+        response = self._request("getSaveData.php", data)
+        return response if response else None
+
+    def get_challenges(self) -> DailyChallenges:
+        """Get daily challenges/quests. Requires authentication."""
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get challenges")
+        udid = self._generate_udid()
+        data = {
+            "udid": udid,
+            "secret": Secrets.COMMON,
+            "chk": generate_rewards_chk("19847"),
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+        }
+        response = self._request("getGJChallenges.php", data)
+        if response.startswith("-") or "|" not in response:
+            return DailyChallenges()
+        return self._parse_challenges(response)
+
+    def get_chest_rewards(self, reward_type: int = 0) -> ChestInfo:
+        """Get chest reward information. Requires authentication.
+
+        Args:
+            reward_type: 0 for info, 1 for small chest, 2 for large chest.
+        """
+        import random
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get chest rewards")
+        udid = self._generate_udid()
+        data = {
+            "udid": udid,
+            "secret": Secrets.COMMON,
+            "chk": generate_rewards_chk("59182"),
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "rewardType": str(reward_type),
+            "r1": str(random.randint(100, 99999)),
+            "r2": str(random.randint(100, 99999)),
+        }
+        response = self._request("getGJRewards.php", data)
+        if response.startswith("-") or "|" not in response:
+            return ChestInfo()
+        return self._parse_chest_info(response)
+
+    def _generate_udid(self) -> str:
+        """Generate a random UDID."""
+        import random
+
+        return (
+            f"{random.randint(100000, 999999)}-{random.randint(1000, 9999)}-"
+            f"{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-"
+            f"{random.randint(10, 99)}{random.randint(100000, 999999)}"
+            f"{random.randint(10000, 99999)}"
+        )
+
+    def _parse_challenges(self, response: str) -> DailyChallenges:
+        """Parse challenges response."""
+        decoded = decode_rewards_response(response, "19847")
+        parts = decoded.split(":")
+        if len(parts) < 8:
+            return DailyChallenges()
+        time_left = int(parts[5]) if parts[5].isdigit() else 0
+        quests: list[Quest] = []
+        for i in range(7, min(10, len(parts))):
+            quest_parts = parts[i].split(",")
+            if len(quest_parts) >= 4:
+                quests.append(
+                    Quest(
+                        quest_type=int(quest_parts[0]) if quest_parts[0].isdigit() else 0,
+                        amount=int(quest_parts[1]) if quest_parts[1].isdigit() else 0,
+                        diamonds=int(quest_parts[2]) if quest_parts[2].isdigit() else 0,
+                        name=quest_parts[3] if len(quest_parts) > 3 else "",
+                    )
+                )
+        return DailyChallenges(time_left=time_left, quests=quests)
+
+    def _parse_chest_info(self, response: str) -> ChestInfo:
+        """Parse chest info response."""
+        decoded = decode_rewards_response(response, "59182")
+        parts = decoded.split(":")
+        if len(parts) < 12:
+            return ChestInfo()
+        small_time_left = int(parts[5]) if parts[5].isdigit() else 0
+        small_reward = None
+        if len(parts) > 6:
+            small_parts = parts[6].split(",")
+            if len(small_parts) >= 4:
+                small_reward = ChestReward(
+                    orbs=int(small_parts[0]) if small_parts[0].isdigit() else 0,
+                    diamonds=int(small_parts[1]) if small_parts[1].isdigit() else 0,
+                    item1=int(small_parts[2]) if small_parts[2].isdigit() else 0,
+                    item2=int(small_parts[3]) if small_parts[3].isdigit() else 0,
+                )
+        small_claimed = int(parts[7]) if len(parts) > 7 and parts[7].isdigit() else 0
+        large_time_left = int(parts[8]) if len(parts) > 8 and parts[8].isdigit() else 0
+        large_reward = None
+        if len(parts) > 9:
+            large_parts = parts[9].split(",")
+            if len(large_parts) >= 4:
+                large_reward = ChestReward(
+                    orbs=int(large_parts[0]) if large_parts[0].isdigit() else 0,
+                    diamonds=int(large_parts[1]) if large_parts[1].isdigit() else 0,
+                    item1=int(large_parts[2]) if large_parts[2].isdigit() else 0,
+                    item2=int(large_parts[3]) if large_parts[3].isdigit() else 0,
+                )
+        large_claimed = int(parts[10]) if len(parts) > 10 and parts[10].isdigit() else 0
+        return ChestInfo(
+            small_time_left=small_time_left,
+            small_reward=small_reward,
+            small_claimed=small_claimed,
+            large_time_left=large_time_left,
+            large_reward=large_reward,
+            large_claimed=large_claimed,
+        )
+
 
 class AsyncClient:
     """Asynchronous client for interacting with the Geometry Dash API.
@@ -1912,3 +2041,123 @@ class AsyncClient:
         }
         response = await self._request("deleteGJAccComment20.php", data)
         return response == "1"
+
+    async def get_save_data(self) -> str | None:
+        """Get save data. Returns empty as of 2.2."""
+        data = {"secret": Secrets.COMMON}
+        response = await self._request("getSaveData.php", data)
+        return response if response else None
+
+    async def get_challenges(self) -> DailyChallenges:
+        """Get daily challenges/quests. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get challenges")
+        udid = self._generate_udid()
+        data = {
+            "udid": udid,
+            "secret": Secrets.COMMON,
+            "chk": generate_rewards_chk("19847"),
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+        }
+        response = await self._request("getGJChallenges.php", data)
+        if response.startswith("-") or "|" not in response:
+            return DailyChallenges()
+        return self._parse_challenges(response)
+
+    async def get_chest_rewards(self, reward_type: int = 0) -> ChestInfo:
+        """Get chest reward information. Requires authentication.
+
+        Args:
+            reward_type: 0 for info, 1 for small chest, 2 for large chest.
+        """
+        import random
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get chest rewards")
+        udid = self._generate_udid()
+        data = {
+            "udid": udid,
+            "secret": Secrets.COMMON,
+            "chk": generate_rewards_chk("59182"),
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "rewardType": str(reward_type),
+            "r1": str(random.randint(100, 99999)),
+            "r2": str(random.randint(100, 99999)),
+        }
+        response = await self._request("getGJRewards.php", data)
+        if response.startswith("-") or "|" not in response:
+            return ChestInfo()
+        return self._parse_chest_info(response)
+
+    def _generate_udid(self) -> str:
+        """Generate a random UDID."""
+        import random
+
+        return (
+            f"{random.randint(100000, 999999)}-{random.randint(1000, 9999)}-"
+            f"{random.randint(1000, 9999)}-{random.randint(1000, 9999)}-"
+            f"{random.randint(10, 99)}{random.randint(100000, 999999)}"
+            f"{random.randint(10000, 99999)}"
+        )
+
+    def _parse_challenges(self, response: str) -> DailyChallenges:
+        """Parse challenges response."""
+        decoded = decode_rewards_response(response, "19847")
+        parts = decoded.split(":")
+        if len(parts) < 8:
+            return DailyChallenges()
+        time_left = int(parts[5]) if parts[5].isdigit() else 0
+        quests: list[Quest] = []
+        for i in range(7, min(10, len(parts))):
+            quest_parts = parts[i].split(",")
+            if len(quest_parts) >= 4:
+                quests.append(
+                    Quest(
+                        quest_type=int(quest_parts[0]) if quest_parts[0].isdigit() else 0,
+                        amount=int(quest_parts[1]) if quest_parts[1].isdigit() else 0,
+                        diamonds=int(quest_parts[2]) if quest_parts[2].isdigit() else 0,
+                        name=quest_parts[3] if len(quest_parts) > 3 else "",
+                    )
+                )
+        return DailyChallenges(time_left=time_left, quests=quests)
+
+    def _parse_chest_info(self, response: str) -> ChestInfo:
+        """Parse chest info response."""
+        decoded = decode_rewards_response(response, "59182")
+        parts = decoded.split(":")
+        if len(parts) < 12:
+            return ChestInfo()
+        small_time_left = int(parts[5]) if parts[5].isdigit() else 0
+        small_reward = None
+        if len(parts) > 6:
+            small_parts = parts[6].split(",")
+            if len(small_parts) >= 4:
+                small_reward = ChestReward(
+                    orbs=int(small_parts[0]) if small_parts[0].isdigit() else 0,
+                    diamonds=int(small_parts[1]) if small_parts[1].isdigit() else 0,
+                    item1=int(small_parts[2]) if small_parts[2].isdigit() else 0,
+                    item2=int(small_parts[3]) if small_parts[3].isdigit() else 0,
+                )
+        small_claimed = int(parts[7]) if len(parts) > 7 and parts[7].isdigit() else 0
+        large_time_left = int(parts[8]) if len(parts) > 8 and parts[8].isdigit() else 0
+        large_reward = None
+        if len(parts) > 9:
+            large_parts = parts[9].split(",")
+            if len(large_parts) >= 4:
+                large_reward = ChestReward(
+                    orbs=int(large_parts[0]) if large_parts[0].isdigit() else 0,
+                    diamonds=int(large_parts[1]) if large_parts[1].isdigit() else 0,
+                    item1=int(large_parts[2]) if large_parts[2].isdigit() else 0,
+                    item2=int(large_parts[3]) if large_parts[3].isdigit() else 0,
+                )
+        large_claimed = int(parts[10]) if len(parts) > 10 and parts[10].isdigit() else 0
+        return ChestInfo(
+            small_time_left=small_time_left,
+            small_reward=small_reward,
+            small_claimed=small_claimed,
+            large_time_left=large_time_left,
+            large_reward=large_reward,
+            large_claimed=large_claimed,
+        )

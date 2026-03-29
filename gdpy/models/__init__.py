@@ -1,5 +1,8 @@
 from gdpy.models.user import (
+    ChestInfo,
+    ChestReward,
     Comment,
+    DailyChallenges,
     DailyLevel,
     DemonDifficulty,
     EpicRating,
@@ -13,6 +16,8 @@ from gdpy.models.user import (
     Message,
     MessageState,
     ModLevel,
+    Quest,
+    SecretReward,
     Song,
     TopArtist,
     User,
@@ -36,4 +41,9 @@ __all__ = [
     "MapPack",
     "DailyLevel",
     "TopArtist",
+    "Quest",
+    "ChestReward",
+    "DailyChallenges",
+    "ChestInfo",
+    "SecretReward",
 ]

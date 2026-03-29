@@ -33,10 +33,10 @@ Raw requests require understanding GD's custom formats and encryption. gdpy abst
 | Songs | 3 | 6 | 50% |
 | Social | 12 | 12 | 100% |
 | Messages | 4 | 4 | 100% |
-| Rewards | 0 | 3 | 0% |
+| Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
-| Misc | 2 | 3 | 67% |
-| **Total** | **45** | **61** | **74%** |
+| Misc | 3 | 3 | 100% |
+| **Total** | **48** | **61** | **79%** |
 
 See [API Coverage](api-coverage.md) for detailed endpoint status.
 
