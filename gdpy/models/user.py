@@ -313,6 +313,7 @@ class Comment(BaseModel):
         if isinstance(v, str):
             try:
                 import base64
+
                 return base64.b64decode(v).decode("utf-8")
             except Exception:
                 return v

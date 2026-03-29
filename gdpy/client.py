@@ -102,9 +102,7 @@ class Client:
         """Get the authenticated username."""
         return self._username
 
-    def _request(
-        self, endpoint: str, data: dict[str, str], secret: str = Secrets.COMMON
-    ) -> str:
+    def _request(self, endpoint: str, data: dict[str, str], secret: str = Secrets.COMMON) -> str:
         """Make a request to the Geometry Dash API."""
         if not self._client:
             raise RuntimeError("Client not initialized. Use 'with Client() as client:'")
@@ -307,9 +305,7 @@ class Client:
         parsed = parse_response(response)
         return Song.model_validate(parsed)
 
-    def get_level_comments(
-        self, level_id: int, limit: int = 10, page: int = 0
-    ) -> list[Comment]:
+    def get_level_comments(self, level_id: int, limit: int = 10, page: int = 0) -> list[Comment]:
         """Get comments for a level.
 
         Args:
@@ -344,9 +340,7 @@ class Client:
             comments.append(Comment.model_validate(comment_data))
         return comments
 
-    def get_leaderboard(
-        self, limit: int = 100, type: str = "top"
-    ) -> list[LeaderboardScore]:
+    def get_leaderboard(self, limit: int = 100, type: str = "top") -> list[LeaderboardScore]:
         """Get the leaderboard.
 
         Args:
@@ -841,9 +835,7 @@ class AsyncClient:
             comments.append(Comment.model_validate(comment_data))
         return comments
 
-    async def get_leaderboard(
-        self, limit: int = 100, type: str = "top"
-    ) -> list[LeaderboardScore]:
+    async def get_leaderboard(self, limit: int = 100, type: str = "top") -> list[LeaderboardScore]:
         """Get the leaderboard.
 
         Args:
