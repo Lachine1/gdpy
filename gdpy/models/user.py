@@ -293,6 +293,29 @@ class Level(BaseModel):
                 return v
         return str(v) if v else ""
 
+    @field_validator("level_string", mode="before")
+    @classmethod
+    def decode_level_string(cls, v: Any) -> str | None:
+        """Decode base64 and decompress level string."""
+        if v is None or v == "":
+            return None
+        if isinstance(v, str):
+            try:
+                import base64
+                import zlib
+
+                # Official levels need prefix added
+                level_data = v
+                if not level_data.startswith("H4sIA"):
+                    level_data = "H4sIAAAAAAAAA" + level_data
+                decoded = base64.urlsafe_b64decode(level_data.encode())
+                # window_bits = 15 | 32 autodetects gzip or not
+                decompressed = zlib.decompress(decoded, 15 | 32)
+                return decompressed.decode()
+            except Exception:
+                return str(v)
+        return str(v) if v else None
+
 
 class Comment(BaseModel):
     """Represents a level or profile comment.
