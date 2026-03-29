@@ -74,23 +74,16 @@ Data models representing Geometry Dash entities.
       python:
         docstring_style: google
 
-### DemonDifficulty
-
-::: gdpy.models.user.DemonDifficulty
-    handlers:
-      python:
-        docstring_style: google
-
 ### LevelLength
 
 ::: gdpy.models.user.LevelLength
-    handlers:
-      python:
-        docstring_style: google
+handlers:
+  python:
+    docstring_style: google
 
 ### EpicRating
 
 ::: gdpy.models.user.EpicRating
-    handlers:
-      python:
-        docstring_style: google
+handlers:
+  python:
+    docstring_style: google
