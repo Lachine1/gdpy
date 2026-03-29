@@ -110,6 +110,11 @@ class Client:
         """Check if the client is authenticated."""
         return self._account_id is not None
 
+    def _get_gjp2(self) -> str:
+        """Get GJP2 hash. Must be called after checking is_authenticated."""
+        assert self._password is not None
+        return generate_gjp2(self._password)
+
     @property
     def account_id(self) -> int | None:
         """Get the authenticated account ID."""
@@ -570,7 +575,7 @@ class Client:
         response = self._request("testSong.php", data)
         return not response.startswith("-")
 
-    def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict]:
+    def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict[str, str]]:
         """Get level lists (user-created lists of levels).
 
         Args:
@@ -604,7 +609,7 @@ class Client:
             raise RuntimeError("Must be authenticated to get messages")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "page": str(page),
             "total": str(limit),
             "getSent": "1" if sent else "0",
@@ -635,7 +640,7 @@ class Client:
             raise RuntimeError("Must be authenticated to get message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "messageID": str(message_id),
         }
         response = self._request("downloadGJMessage20.php", data)
@@ -664,7 +669,7 @@ class Client:
             raise RuntimeError("Must be authenticated to send message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "toAccountID": str(recipient_id),
             "subject": base64.b64encode(subject.encode()).decode(),
             "body": base64.b64encode(body.encode()).decode(),
@@ -688,7 +693,7 @@ class Client:
             raise RuntimeError("Must be authenticated to delete message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "messageID": str(message_id),
         }
         response = self._request("deleteGJMessages20.php", data)
@@ -714,7 +719,7 @@ class Client:
             raise RuntimeError("Must be authenticated to get friend requests")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "page": str(page),
             "total": str(limit),
             "getSent": "1" if sent else "0",
@@ -747,7 +752,7 @@ class Client:
             raise RuntimeError("Must be authenticated to send friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "toAccountID": str(recipient_id),
             "comment": base64.b64encode(message.encode()).decode() if message else "",
         }
@@ -770,7 +775,7 @@ class Client:
             raise RuntimeError("Must be authenticated to accept friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "requestID": str(request_id),
         }
         response = self._request("acceptGJFriendRequest20.php", data)
@@ -792,7 +797,7 @@ class Client:
             raise RuntimeError("Must be authenticated to delete friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "requestID": str(request_id),
         }
         response = self._request("deleteGJFriendRequests20.php", data)
@@ -811,7 +816,7 @@ class Client:
             raise RuntimeError("Must be authenticated to get friends")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "type": "0",
         }
         response = self._request("getGJUserList20.php", data)
@@ -836,7 +841,7 @@ class Client:
             raise RuntimeError("Must be authenticated to remove friend")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(friend_id),
         }
         response = self._request("removeGJFriend20.php", data)
@@ -858,7 +863,7 @@ class Client:
             raise RuntimeError("Must be authenticated to block user")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(user_id),
         }
         response = self._request("blockGJUser20.php", data)
@@ -880,7 +885,7 @@ class Client:
             raise RuntimeError("Must be authenticated to unblock user")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(user_id),
         }
         response = self._request("unblockGJUser20.php", data)
@@ -899,7 +904,7 @@ class Client:
             raise RuntimeError("Must be authenticated to get blocked users")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "type": "1",
         }
         response = self._request("getGJUserList20.php", data)
@@ -925,7 +930,7 @@ class Client:
             raise RuntimeError("Must be authenticated to like levels")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "itemID": str(level_id),
             "type": "1",
             "like": "1" if like else "0",
@@ -950,7 +955,7 @@ class Client:
             raise RuntimeError("Must be authenticated to like comments")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "itemID": str(comment_id),
             "type": "2",
             "like": "1" if like else "0",
@@ -979,8 +984,8 @@ class Client:
         encoded_content = base64.b64encode(content.encode()).decode()
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
-            "userName": self._username,
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
             "comment": encoded_content,
             "levelID": str(level_id),
             "percent": str(percent),
@@ -1007,7 +1012,7 @@ class Client:
             raise RuntimeError("Must be authenticated to delete comment")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "commentID": str(comment_id),
             "levelID": str(level_id),
         }
@@ -1033,8 +1038,8 @@ class Client:
         encoded_content = base64.b64encode(content.encode()).decode()
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
-            "userName": self._username,
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
             "comment": encoded_content,
         }
         response = self._request("uploadGJAccComment20.php", data)
@@ -1058,7 +1063,7 @@ class Client:
             raise RuntimeError("Must be authenticated to delete profile comment")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "commentID": str(comment_id),
         }
         response = self._request("deleteGJAccComment20.php", data)
@@ -1138,7 +1143,12 @@ class AsyncClient:
     @property
     def is_authenticated(self) -> bool:
         """Check if the client is authenticated."""
-        return self._account_id is not None
+        return self._account_id is not None and self._password is not None
+
+    def _get_gjp2(self) -> str:
+        """Get GJP2 hash. Must be called after checking is_authenticated."""
+        assert self._password is not None
+        return generate_gjp2(self._password)
 
     @property
     def account_id(self) -> int | None:
@@ -1604,7 +1614,7 @@ class AsyncClient:
         response = await self._request("testSong.php", data)
         return not response.startswith("-")
 
-    async def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict]:
+    async def get_level_lists(self, limit: int = 10, page: int = 0) -> list[dict[str, str]]:
         """Get level lists (user-created lists of levels).
 
         Args:
@@ -1628,7 +1638,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to get messages")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "page": str(page),
             "total": str(limit),
             "getSent": "1" if sent else "0",
@@ -1648,7 +1658,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to get message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "messageID": str(message_id),
         }
         response = await self._request("downloadGJMessage20.php", data)
@@ -1665,7 +1675,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to send message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "toAccountID": str(recipient_id),
             "subject": base64.b64encode(subject.encode()).decode(),
             "body": base64.b64encode(body.encode()).decode(),
@@ -1679,7 +1689,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to delete message")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "messageID": str(message_id),
         }
         response = await self._request("deleteGJMessages20.php", data)
@@ -1693,7 +1703,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to get friend requests")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "page": str(page),
             "total": str(limit),
             "getSent": "1" if sent else "0",
@@ -1715,7 +1725,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to send friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "toAccountID": str(recipient_id),
             "comment": base64.b64encode(message.encode()).decode() if message else "",
         }
@@ -1728,7 +1738,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to accept friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "requestID": str(request_id),
         }
         response = await self._request("acceptGJFriendRequest20.php", data)
@@ -1740,7 +1750,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to delete friend request")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "requestID": str(request_id),
         }
         response = await self._request("deleteGJFriendRequests20.php", data)
@@ -1752,7 +1762,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to get friends")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "type": "0",
         }
         response = await self._request("getGJUserList20.php", data)
@@ -1767,7 +1777,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to remove friend")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(friend_id),
         }
         response = await self._request("removeGJFriend20.php", data)
@@ -1779,7 +1789,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to block user")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(user_id),
         }
         response = await self._request("blockGJUser20.php", data)
@@ -1791,7 +1801,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to unblock user")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "targetAccountID": str(user_id),
         }
         response = await self._request("unblockGJUser20.php", data)
@@ -1803,7 +1813,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to get blocked users")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "type": "1",
         }
         response = await self._request("getGJUserList20.php", data)
@@ -1818,7 +1828,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to like levels")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "itemID": str(level_id),
             "type": "1",
             "like": "1" if like else "0",
@@ -1832,7 +1842,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to like comments")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "itemID": str(comment_id),
             "type": "2",
             "like": "1" if like else "0",
@@ -1849,8 +1859,8 @@ class AsyncClient:
         encoded_content = base64.b64encode(content.encode()).decode()
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
-            "userName": self._username,
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
             "comment": encoded_content,
             "levelID": str(level_id),
             "percent": str(percent),
@@ -1866,7 +1876,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to delete comment")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "commentID": str(comment_id),
             "levelID": str(level_id),
         }
@@ -1882,8 +1892,8 @@ class AsyncClient:
         encoded_content = base64.b64encode(content.encode()).decode()
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
-            "userName": self._username,
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
             "comment": encoded_content,
         }
         response = await self._request("uploadGJAccComment20.php", data)
@@ -1897,7 +1907,7 @@ class AsyncClient:
             raise RuntimeError("Must be authenticated to delete profile comment")
         data = {
             "accountID": str(self._account_id),
-            "gjp2": generate_gjp2(self._password),
+            "gjp2": self._get_gjp2(),
             "commentID": str(comment_id),
         }
         response = await self._request("deleteGJAccComment20.php", data)

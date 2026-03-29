@@ -353,50 +353,6 @@ class Song(BaseModel):
     download_url: str = Field(alias="10")
 
 
-class Message(BaseModel):
-    """Represents a private message.
-
-    Attributes:
-        message_id: Unique message identifier.
-        subject: Message subject line.
-        content: Message body content.
-        author: Sender's username.
-        author_id: Sender's account ID.
-        is_read: Whether message has been read.
-    """
-
-    model_config = ConfigDict(populate_by_name=True, extra="allow")
-
-    message_id: int = Field(alias="1")
-    subject: str = Field(alias="4")
-    content: str = Field(alias="5")
-    author: str = Field(alias="6")
-    author_id: int = Field(alias="7")
-    is_read: bool = Field(default=False, alias="8")
-
-
-class FriendRequest(BaseModel):
-    """Represents a friend request.
-
-    Attributes:
-        request_id: Unique request identifier.
-        from_user: Sender's username.
-        from_user_id: Sender's user ID.
-        to_user: Recipient's username.
-        to_user_id: Recipient's user ID.
-        message: Optional message with the request.
-    """
-
-    model_config = ConfigDict(populate_by_name=True, extra="allow")
-
-    request_id: int = Field(alias="1")
-    from_user: str = Field(alias="2")
-    from_user_id: int = Field(alias="3")
-    to_user: str = Field(alias="4")
-    to_user_id: int = Field(alias="5")
-    message: str = Field(default="", alias="6")
-
-
 class LeaderboardScore(BaseModel):
     """Represents a leaderboard entry.
 

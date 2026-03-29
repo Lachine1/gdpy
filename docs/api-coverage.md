@@ -6,17 +6,17 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Category | Implemented | Total | Coverage |
 | :--- | :---: | :---: | :---: |
-| Accounts | 2 | 5 | 40% |
-| Users | 3 | 4 | 75% |
-| Levels | 6 | 14 | 43% |
+| Accounts | 3 | 5 | 60% |
+| Users | 4 | 4 | 100% |
+| Levels | 7 | 14 | 50% |
 | Comments | 7 | 7 | 100% |
 | Songs | 3 | 6 | 50% |
-| Social | 11 | 12 | 92% |
+| Social | 12 | 12 | 100% |
 | Messages | 4 | 4 | 100% |
 | Rewards | 0 | 3 | 0% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 6 | 33% |
-| **Total** | **40** | **64** | **63%** |
+| **Total** | **45** | **64** | **70%** |
 
 ## Legend
 
@@ -36,7 +36,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `accounts/registerGJAccount.php` | `register()` | :warning: | Pre-2.2 API; rejects temp emails |
 | `accounts/backupGJAccountNew.php` | - | :x: | Backup account (requires auth) |
 | `accounts/syncGJAccountNew.php` | - | :x: | Sync account (requires auth) |
-| `updateGJAccSettings20.php` | - | :x: | Update account settings (requires auth) |
+| `updateGJAccSettings20.php` | `update_account_settings()` | :white_check_mark: | Update account settings (requires auth) |
 
 ---
 
@@ -47,7 +47,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `getGJUserInfo20.php` | `get_user()` | :white_check_mark: | Get user by account ID |
 | `getGJUsers20.php` | `search_users()` | :white_check_mark: | Search users by name |
 | `getGJScores20.php` | `get_leaderboard()` | :white_check_mark: | Get global/creator leaderboard |
-| `updateGJUserScore22.php` | - | :x: | Update user stats (requires auth) |
+| `updateGJUserScore22.php` | `update_user_stats()` | :white_check_mark: | Update user stats (requires auth) |
 
 ---
 
@@ -67,8 +67,8 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `rateGJDemon21.php` | - | :x: | Rate demon difficulty (requires auth) |
 | `suggestGJStars20.php` | - | :x: | Suggest stars for level (requires auth) |
 | `reportGJLevel.php` | - | :x: | Report level (requires auth) |
-| `getGJLevelScores211.php` | - | :x: | Get level leaderboard (requires auth) |
-| `updateGJDesc20.php` | - | :x: | Update level description (requires auth) |
+| `getGJLevelScores211.php` | `get_level_scores()` | :white_check_mark: | Get level leaderboard (requires auth) |
+| `updateGJDesc20.php` | `update_level_description()` | :white_check_mark: | Update level description (requires auth) |
 
 ---
 
@@ -107,7 +107,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `uploadFriendRequest20.php` | `send_friend_request()` | :white_check_mark: | Send friend request (requires auth) |
 | `acceptGJFriendRequest20.php` | `accept_friend_request()` | :white_check_mark: | Accept friend request (requires auth) |
 | `deleteGJFriendRequests20.php` | `delete_friend_request()` | :white_check_mark: | Delete friend request (requires auth) |
-| `readGJFriendRequest20.php` | - | :x: | Mark friend request as read (requires auth) |
+| `readGJFriendRequest20.php` | `read_friend_request()` | :white_check_mark: | Mark friend request as read (requires auth) |
 | `removeGJFriend20.php` | `remove_friend()` | :white_check_mark: | Remove friend (requires auth) |
 | `getGJUserList20.php` | `get_friends()`, `get_blocked_users()` | :white_check_mark: | Get friends/blocked list (requires auth) |
 | `blockGJUser20.php` | `block_user()` | :white_check_mark: | Block user (requires auth) |
