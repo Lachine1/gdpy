@@ -1,12 +1,10 @@
-import os
-import json
+import asyncio
+
 import pytest
 import pytest_asyncio
-import asyncio
-from gdpy import AsyncClient
-from gdpy.exceptions import InvalidRequestError, InvalidCredentialsError
 
-TEST_ACCOUNT_FILE = "tests/.test_account.json"
+from gdpy import AsyncClient
+from gdpy.exceptions import InvalidRequestError
 
 
 @pytest_asyncio.fixture
@@ -76,7 +74,7 @@ class TestLevelEndpoints:
     async def test_get_level_by_id(self, client: AsyncClient):
         try:
             await asyncio.sleep(2)
-            level = await client.get_level(level_id=128)  # 1st level
+            level = await client.get_level(level_id=128)
             assert level.level_id == 128
             assert level.name != ""
             assert level.objects > 0
@@ -87,7 +85,7 @@ class TestLevelEndpoints:
 class TestSongEndpoints:
     @pytest.mark.asyncio
     async def test_get_song(self, client: AsyncClient):
-        song = await client.get_song(song_id=803223)  # Xtrullor - Arcana
+        song = await client.get_song(song_id=803223)
         assert song.song_id == 803223
         assert song.name != ""
         assert song.author != ""
@@ -139,7 +137,7 @@ class TestLeaderboardEndpoints:
 class TestUserLevelEndpoints:
     @pytest.mark.asyncio
     async def test_get_user_levels(self, client: AsyncClient):
-        user = await client.get_user(account_id=71)  # RobTop
+        user = await client.get_user(account_id=71)
         levels = await client.get_user_levels(user_id=user.user_id, limit=5)
         assert isinstance(levels, list)
 
@@ -157,11 +155,11 @@ class TestSearchAndFetch:
         await asyncio.sleep(1)
         levels = await client.search_levels(query="ReTraY", limit=5)
         assert len(levels) > 0
-        
+
         first_level = levels[0]
         await asyncio.sleep(2)
         fetched_level = await client.get_level(level_id=first_level.level_id)
-        
+
         assert fetched_level.level_id == first_level.level_id
         assert fetched_level.name != ""
         assert fetched_level.objects > 0

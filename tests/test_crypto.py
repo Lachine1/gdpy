@@ -1,6 +1,5 @@
-import pytest
-from gdpy.crypto import xor_cipher, xor_cipher_int, generate_gjp2, encode_base64, decode_base64
-from gdpy.constants import Secrets, Salts, URLs
+from gdpy.constants import Salts, Secrets, URLs
+from gdpy.crypto import decode_base64, encode_base64, generate_gjp2, xor_cipher, xor_cipher_int
 
 
 class TestCrypto:

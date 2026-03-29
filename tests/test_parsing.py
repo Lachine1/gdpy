@@ -1,5 +1,4 @@
-import pytest
-from gdpy.utils.parsing import parse_response, parse_list_response
+from gdpy.utils.parsing import parse_list_response, parse_response
 
 
 class TestParsing:

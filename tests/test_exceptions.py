@@ -1,16 +1,17 @@
 import pytest
+
 from gdpy.exceptions import (
-    GDError,
-    RequestError,
-    AuthError,
-    InvalidCredentialsError,
     AccountDisabledError,
-    RateLimitError,
-    NotFoundError,
-    RegistrationError,
-    UsernameTakenError,
+    AuthError,
     EmailTakenError,
+    GDError,
+    InvalidCredentialsError,
+    NotFoundError,
     PasswordTooShortError,
+    RateLimitError,
+    RegistrationError,
+    RequestError,
+    UsernameTakenError,
     UsernameTooShortError,
 )
 

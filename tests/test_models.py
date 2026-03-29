@@ -1,5 +1,4 @@
-import pytest
-from gdpy.models import User, Level, ModLevel, LevelDifficulty, LevelLength
+from gdpy.models import Level, LevelDifficulty, LevelLength, ModLevel, User
 
 
 class TestModels:
