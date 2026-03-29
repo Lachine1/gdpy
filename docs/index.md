@@ -36,7 +36,7 @@ Raw requests require understanding GD's custom formats and encryption. gdpy abst
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 2 | 100% |
-| **Total** | **45** | **56** | **80%** |
+| **Total** | **45** | **60** | **75%** |
 
 See [API Coverage](api-coverage.md) for detailed endpoint status.
 

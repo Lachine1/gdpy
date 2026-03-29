@@ -16,7 +16,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 2 | 100% |
-| **Total** | **45** | **56** | **80%** |
+| **Total** | **45** | **60** | **75%** |
 
 ## Legend
 
