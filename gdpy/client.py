@@ -45,11 +45,17 @@ class Client:
         base_url: Optional custom base URL for the API. Defaults to boomlings.com.
 
     Example:
-        ```python
-        with Client() as client:
-            user = client.get_user(account_id=71)
-            print(user.username)
-        ```
+    ```python
+    client = Client()
+    user = client.get_user(account_id=71)
+    print(user.username)
+    client.close()
+
+    # Or use as context manager:
+    with Client() as client:
+        user = client.get_user(account_id=71)
+        print(user.username)
+    ```
     """
 
     def __init__(self, base_url: str | None = None) -> None:
@@ -65,15 +71,27 @@ class Client:
         self._username: str | None = None
         self._password: str | None = None
 
+    def _ensure_client(self) -> httpx.Client:
+        """Ensure HTTP client is initialized."""
+        if self._client is None:
+            self._client = httpx.Client(
+                headers={
+                    "User-Agent": "",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                timeout=30.0,
+            )
+        return self._client
+
+    def close(self) -> None:
+        """Close the HTTP client."""
+        if self._client:
+            self._client.close()
+            self._client = None
+
     def __enter__(self) -> "Client":
         """Enter context manager and initialize HTTP client."""
-        self._client = httpx.Client(
-            headers={
-                "User-Agent": "",
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            timeout=30.0,
-        )
+        self._ensure_client()
         return self
 
     def __exit__(
@@ -83,9 +101,7 @@ class Client:
         exc_tb: object,
     ) -> None:
         """Exit context manager and close HTTP client."""
-        if self._client:
-            self._client.close()
-            self._client = None
+        self.close()
 
     @property
     def is_authenticated(self) -> bool:
@@ -104,11 +120,10 @@ class Client:
 
     def _request(self, endpoint: str, data: dict[str, str], secret: str = Secrets.COMMON) -> str:
         """Make a request to the Geometry Dash API."""
-        if not self._client:
-            raise RuntimeError("Client not initialized. Use 'with Client() as client:'")
+        client = self._ensure_client()
         data["secret"] = secret
         url = f"{self.base_url}/{endpoint}"
-        response = self._client.post(url, data=data)
+        response = client.post(url, data=data)
         response.raise_for_status()
         return response.text
 
@@ -536,11 +551,17 @@ class AsyncClient:
         base_url: Optional custom base URL for the API. Defaults to boomlings.com.
 
     Example:
-        ```python
-        async with AsyncClient() as client:
-            user = await client.get_user(account_id=71)
-            print(user.username)
-        ```
+    ```python
+    client = AsyncClient()
+    user = await client.get_user(account_id=71)
+    print(user.username)
+    await client.close()
+
+    # Or use as context manager:
+    async with AsyncClient() as client:
+        user = await client.get_user(account_id=71)
+        print(user.username)
+    ```
     """
 
     def __init__(self, base_url: str | None = None) -> None:
@@ -556,15 +577,27 @@ class AsyncClient:
         self._username: str | None = None
         self._password: str | None = None
 
+    def _ensure_client(self) -> httpx.AsyncClient:
+        """Ensure HTTP client is initialized."""
+        if self._client is None:
+            self._client = httpx.AsyncClient(
+                headers={
+                    "User-Agent": "",
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                timeout=30.0,
+            )
+        return self._client
+
+    async def close(self) -> None:
+        """Close the HTTP client."""
+        if self._client:
+            await self._client.aclose()
+            self._client = None
+
     async def __aenter__(self) -> "AsyncClient":
         """Enter async context manager and initialize HTTP client."""
-        self._client = httpx.AsyncClient(
-            headers={
-                "User-Agent": "",
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            timeout=30.0,
-        )
+        self._ensure_client()
         return self
 
     async def __aexit__(
@@ -574,9 +607,7 @@ class AsyncClient:
         exc_tb: object,
     ) -> None:
         """Exit async context manager and close HTTP client."""
-        if self._client:
-            await self._client.aclose()
-            self._client = None
+        await self.close()
 
     @property
     def is_authenticated(self) -> bool:
@@ -597,11 +628,10 @@ class AsyncClient:
         self, endpoint: str, data: dict[str, str], secret: str = Secrets.COMMON
     ) -> str:
         """Make a request to the Geometry Dash API."""
-        if not self._client:
-            raise RuntimeError("Client not initialized. Use 'async with AsyncClient() as client:'")
+        client = self._ensure_client()
         data["secret"] = secret
         url = f"{self.base_url}/{endpoint}"
-        response = await self._client.post(url, data=data)
+        response = await client.post(url, data=data)
         response.raise_for_status()
         return response.text
 

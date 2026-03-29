@@ -280,6 +280,19 @@ class Level(BaseModel):
             return v != "0"
         return bool(v)
 
+    @field_validator("description", mode="before")
+    @classmethod
+    def decode_description(cls, v: Any) -> str:
+        """Decode base64 encoded level description."""
+        if isinstance(v, str):
+            try:
+                import base64
+
+                return base64.b64decode(v).decode("utf-8")
+            except Exception:
+                return v
+        return str(v) if v else ""
+
 
 class Comment(BaseModel):
     """Represents a level or profile comment.

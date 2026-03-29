@@ -51,13 +51,15 @@ pip install gdpy
     from gdpy import Client
     from gdpy.models import User, Level
 
-    with Client() as client:
-        # Get user info with type hints
-        user: User = client.get_user(account_id=71)  # RobTop
-        print(f"Username: {user.username}")
-        print(f"Stars: {user.stars}")
+    # Use without context manager (remember to close!)
+    client = Client()
+    user: User = client.get_user(account_id=71)  # RobTop
+    print(f"Username: {user.username}")
+    print(f"Stars: {user.stars}")
+    client.close()
 
-        # Search levels
+    # Or use as context manager (auto-closes)
+    with Client() as client:
         levels: list[Level] = client.search_levels(query="ReTraY", limit=5)
         for level in levels:
             print(f"{level.name} - {level.downloads} downloads")
@@ -71,13 +73,15 @@ pip install gdpy
     from gdpy.models import User, Level
 
     async def main():
-        async with AsyncClient() as client:
-            # Get user info with type hints
-            user: User = await client.get_user(account_id=71)
-            print(f"Username: {user.username}")
-            print(f"Stars: {user.stars}")
+        # Use without context manager (remember to close!)
+        client = AsyncClient()
+        user: User = await client.get_user(account_id=71)
+        print(f"Username: {user.username}")
+        print(f"Stars: {user.stars}")
+        await client.close()
 
-            # Search levels
+        # Or use as context manager (auto-closes)
+        async with AsyncClient() as client:
             levels: list[Level] = await client.search_levels(query="ReTraY", limit=5)
             for level in levels:
                 print(f"{level.name}")
@@ -87,51 +91,51 @@ pip install gdpy
 
 ## Troubleshooting
 
-### Why am I getting 429 errors?
+??? "Why am I getting 429 errors?"
 
-The Geometry Dash API has aggressive rate limiting. If you make requests too quickly, you'll get `-1` responses (handled as `InvalidRequestError`). Add delays between requests:
+    The Geometry Dash API has aggressive rate limiting. If you make requests too quickly, you'll get `-1` responses (handled as `InvalidRequestError`). Add delays between requests:
 
-```python
-import asyncio
-from gdpy import AsyncClient
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
 
-async def main():
-    async with AsyncClient() as client:
-        for level_id in level_ids:
-            level = await client.get_level(level_id=level_id)
-            await asyncio.sleep(2)  # Wait between requests
-```
+    async def main():
+        async with AsyncClient() as client:
+            for level_id in level_ids:
+                level = await client.get_level(level_id=level_id)
+                await asyncio.sleep(2)  # Wait between requests
+    ```
 
-### How do I handle rate limits?
+??? "How do I handle rate limits?"
 
-Catch `InvalidRequestError` and retry with exponential backoff:
+    Catch `InvalidRequestError` and retry with exponential backoff:
 
-```python
-from gdpy import Client
-from gdpy.exceptions import InvalidRequestError
-import time
+    ```python
+    from gdpy import Client
+    from gdpy.exceptions import InvalidRequestError
+    import time
 
-with Client() as client:
-    for _ in range(3):  # Retry up to 3 times
-        try:
-            user = client.get_user(account_id=71)
-            break
-        except InvalidRequestError:
-            time.sleep(2)
-```
+    with Client() as client:
+        for _ in range(3):  # Retry up to 3 times
+            try:
+                user = client.get_user(account_id=71)
+                break
+            except InvalidRequestError:
+                time.sleep(2)
+    ```
 
-### Why does level data look incomplete?
+??? "Why does level data look incomplete?"
 
-Some fields like `level_string` (the actual level data) are only included when fetching a single level via `get_level()`, not in search results. If you need full data:
+    Some fields like `level_string` (the actual level data) are only included when fetching a single level via `get_level()`, not in search results. If you need full data:
 
-```python
-# Search gives basic info
-levels = client.search_levels(query="ReTraY", limit=5)
+    ```python
+    # Search gives basic info
+    levels = client.search_levels(query="ReTraY", limit=5)
 
-# Fetch full data for a specific level
-full_level = client.get_level(level_id=levels[0].level_id)
-print(full_level.level_string)  # Only available here
-```
+    # Fetch full data for a specific level
+    full_level = client.get_level(level_id=levels[0].level_id)
+    print(full_level.level_string)  # Only available here
+    ```
 
 ## Requirements
 
