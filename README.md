@@ -1,21 +1,32 @@
 # gdpy
 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Lachine1/gdpy/blob/main/LICENSE)
+[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Docs](https://img.shields.io/badge/docs-github_pages-blue.svg)](https://lachine1.github.io/gdpy/)
+
 A modern, type-safe Python library for interacting with the Geometry Dash private API.
+
+**[Documentation](https://lachine1.github.io/gdpy/)** | **[API Coverage](https://lachine1.github.io/gdpy/api-coverage/)**
 
 ## Features
 
 - **Sync & Async** - Both synchronous (`Client`) and asynchronous (`AsyncClient`) interfaces
 - **Modern HTTP** - Built with `httpx` for both sync and async operations
 - **Type-safe** - Full type hints with runtime validation via Pydantic
-- **Well-structured** - Clean, pythonic API design
+- **Custom servers** - Connect to private GD servers via `base_url` parameter
 - **Built-in crypto** - XOR cipher, GJP2 encoding, base64 utilities, and checksums
 - **Comprehensive errors** - Full exception hierarchy for different error scenarios
-- **Well-documented** - Docstrings and examples for all public APIs
 
 ## Installation
 
 ```bash
 pip install gdpy
+```
+
+Or using [uv](https://docs.astral.sh/uv/):
+
+```bash
+uv pip install gdpy
 ```
 
 ## Quick Start
@@ -46,26 +57,37 @@ from gdpy import AsyncClient
 async def main():
     async with AsyncClient() as client:
         # Get user info
-        user = await client.get_user(account_id=71)
+        user = await client.get_user(account_id=71)  # RobTop
         print(f"Username: {user.username}")
+        print(f"Stars: {user.stars}")
 
         # Search levels
         levels = await client.search_levels(query="ReTraY", limit=5)
         for level in levels:
-            print(f"{level.name}")
+            print(f"{level.name} - {level.downloads} downloads")
 
 asyncio.run(main())
 ```
 
-## Documentation
+### Custom Server
 
-Full documentation available at [https://Lachine1.github.io/gdpy/](https://Lachine1.github.io/gdpy/)
+```python
+from gdpy import Client
 
-## Requirements
+# Connect to a private GD server
+with Client(base_url="https://your-server.com/database") as client:
+    user = client.get_user(account_id=1)
+```
 
-- Python 3.10+
-- `httpx` - HTTP client
-- `pydantic` - Data validation
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 

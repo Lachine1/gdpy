@@ -5,6 +5,7 @@ from gdpy.exceptions.not_found import NotFoundError
 from gdpy.exceptions.rate_limit import RateLimitError
 from gdpy.exceptions.registration import (
     EmailTakenError,
+    InvalidEmailError,
     PasswordTooShortError,
     RegistrationError,
     UsernameTakenError,
@@ -25,6 +26,7 @@ __all__ = [
     "RegistrationError",
     "UsernameTakenError",
     "EmailTakenError",
+    "InvalidEmailError",
     "PasswordTooShortError",
     "UsernameTooShortError",
 ]

@@ -5,7 +5,7 @@ description = "A modern Python client for the Geometry Dash API"
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "gdpy contributors" }]
+authors = [{ name = "Lachine" }]
 keywords = ["geometry-dash", "api", "client", "async"]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -14,8 +14,11 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Framework :: AsyncIO",
     "Topic :: Games/Entertainment",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet",
     "Typing :: Typed",
 ]
 
@@ -43,12 +46,35 @@ docs = [
     "pymdown-extensions>=10.0.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/Lachine1/gdpy"
+Repository = "https://github.com/Lachine1/gdpy"
+Documentation = "https://Lachine1.github.io/gdpy/"
+"Bug Tracker" = "https://github.com/Lachine1/gdpy/issues"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["gdpy"]
+
+[tool.uv]
+dev-dependencies = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "mypy>=1.0.0",
+    "ruff>=0.1.0",
+    "mkdocs>=1.5.0",
+    "mkdocs-material>=9.0.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.0.0",
+    "mkdocs-minify-plugin>=0.7.0",
+    "mkdocs-autorefs>=1.0.0",
+    "mkdocs-open-in-new-tab>=1.0.0",
+    "mkdocstrings[python]>=0.24.0",
+    "pymdown-extensions>=10.0.0",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

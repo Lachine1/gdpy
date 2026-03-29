@@ -67,6 +67,12 @@ plugins:
             docstring_style: google
             show_source: true
             show_signature_annotations: true
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            merge_init_into_class: true
+            separate_signature: true
+            filters: ["!^_"]
 
 markdown_extensions:
   - toc:
@@ -74,6 +80,8 @@ markdown_extensions:
       permalink_title: Link to this section
   - pymdownx.highlight:
       anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - pymdownx.superfences
@@ -87,3 +95,5 @@ markdown_extensions:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - footnotes
+  - attr_list
+  - md_in_html

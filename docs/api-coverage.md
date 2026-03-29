@@ -31,7 +31,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
 | `accounts/loginGJAccount.php` | `login()` | :white_check_mark: | Login with username/password |
-| `accounts/registerGJAccount.php` | `register()` | :white_check_mark: | Register new account |
+| `accounts/registerGJAccount.php` | `register()` | :warning: | Pre-2.2 API; rejects temp emails |
 
 ---
 

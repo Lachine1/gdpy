@@ -13,6 +13,10 @@ class EmailTakenError(RegistrationError):
     error_code = -3
 
 
+class InvalidEmailError(RegistrationError):
+    error_code = -6
+
+
 class PasswordTooShortError(RegistrationError):
     error_code = -8
 

@@ -12,6 +12,7 @@ from gdpy.exceptions import (
     AccountDisabledError,
     EmailTakenError,
     InvalidCredentialsError,
+    InvalidEmailError,
     InvalidRequestError,
     NotFoundError,
     PasswordTooShortError,
@@ -127,6 +128,8 @@ class Client:
                 raise UsernameTakenError("Username is already taken")
             elif code == -3:
                 raise EmailTakenError("Email is already registered")
+            elif code == -6:
+                raise InvalidEmailError("Invalid or blacklisted email address")
             elif code == -8:
                 raise PasswordTooShortError("Password must be at least 6 characters")
             elif code == -9:
@@ -175,10 +178,15 @@ class Client:
     def register(self, username: str, password: str, email: str) -> bool:
         """Register a new Geometry Dash account.
 
+        Uses the pre-2.2 API endpoint. GD 2.2 added captcha protection via
+        register.php web page, but registerGJAccount.php API still works.
+
+        Note: GD rejects temporary email addresses.
+
         Args:
             username: Desired username (min 3 characters).
             password: Desired password (min 6 characters).
-            email: Email address.
+            email: Email address (must be real, not temp email).
 
         Returns:
             True if registration successful, False otherwise.
@@ -188,6 +196,7 @@ class Client:
             EmailTakenError: If email is already registered.
             PasswordTooShortError: If password is too short.
             UsernameTooShortError: If username is too short.
+            InvalidEmailError: If email is invalid or blacklisted.
         """
         data = {
             "userName": username,
@@ -616,6 +625,8 @@ class AsyncClient:
                 raise UsernameTakenError("Username is already taken")
             elif code == -3:
                 raise EmailTakenError("Email is already registered")
+            elif code == -6:
+                raise InvalidEmailError("Invalid or blacklisted email address")
             elif code == -8:
                 raise PasswordTooShortError("Password must be at least 6 characters")
             elif code == -9:
@@ -664,10 +675,15 @@ class AsyncClient:
     async def register(self, username: str, password: str, email: str) -> bool:
         """Register a new Geometry Dash account.
 
+        Uses the pre-2.2 API endpoint. GD 2.2 added captcha protection via
+        register.php web page, but registerGJAccount.php API still works.
+
+        Note: GD rejects temporary email addresses.
+
         Args:
             username: Desired username (min 3 characters).
             password: Desired password (min 6 characters).
-            email: Email address.
+            email: Email address (must be real, not temp email).
 
         Returns:
             True if registration successful, False otherwise.
@@ -677,6 +693,7 @@ class AsyncClient:
             EmailTakenError: If email is already registered.
             PasswordTooShortError: If password is too short.
             UsernameTooShortError: If username is too short.
+            InvalidEmailError: If email is invalid or blacklisted.
         """
         data = {
             "userName": username,

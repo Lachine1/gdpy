@@ -1,173 +1,8 @@
 # Examples
 
-This page contains various usage examples for gdpy.
+This page contains advanced usage examples for gdpy.
 
-## User Operations
-
-### Get User Profile
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        user = client.get_user(account_id=71) # RobTop
-        print(f"Username: {user.username}")
-        print(f"Stars: {user.stars}")
-        print(f"Diamonds: {user.diamonds}")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            user = await client.get_user(account_id=71)
-            print(f"Username: {user.username}")
-            print(f"Stars: {user.stars}")
-            print(f"Diamonds: {user.diamonds}")
-
-    asyncio.run(main())
-    ```
-
-### Search Users
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        users = client.search_users(query="Viprin")
-        for user in users:
-            print(f"{user.username} (Account ID: {user.account_id})")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            users = await client.search_users(query="Viprin")
-            for user in users:
-                print(f"{user.username} (Account ID: {user.account_id})")
-
-    asyncio.run(main())
-    ```
-
-### Get User's Created Levels
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        user = client.get_user(account_id=71)  # RobTop
-        levels = client.get_user_levels(user_id=user.user_id, limit=10)
-        for level in levels:
-            print(f"{level.name} - {level.downloads:,} downloads")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            user = await client.get_user(account_id=71)
-            levels = await client.get_user_levels(user_id=user.user_id, limit=10)
-            for level in levels:
-                print(f"{level.name} - {level.downloads:,} downloads")
-
-    asyncio.run(main())
-    ```
-
-## Level Operations
-
-### Search Levels
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        levels = client.search_levels(query="Bloodbath", limit=10)
-        for level in levels:
-            print(f"{level.name}")
-            print(f"  Downloads: {level.downloads:,}")
-            print(f"  Likes: {level.likes:,}")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            levels = await client.search_levels(query="Bloodbath", limit=10)
-            for level in levels:
-                print(f"{level.name}")
-                print(f"  Downloads: {level.downloads:,}")
-                print(f"  Likes: {level.likes:,}")
-
-    asyncio.run(main())
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            levels = await client.search_levels(query="Bloodbath", limit=10)
-            for level in levels:
-                print(f"{level.name}")
-
-    asyncio.run(main())
-    ```
-
-### Get Level by ID
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        level = client.get_level(level_id=3009486) # ReTraY
-        print(f"Name: {level.name}")
-        print(f"Objects: {level.objects:,}")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            level = await client.get_level(level_id=3009486)
-            print(f"Name: {level.name}")
-            print(f"Objects: {level.objects:,}")
-
-    asyncio.run(main())
-    ```
+## Advanced Level Operations
 
 ### Paginated Search
 
@@ -201,21 +36,7 @@ This page contains various usage examples for gdpy.
     asyncio.run(main())
     ```
 
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            level = await client.get_level(level_id=3009486)
-            print(f"Name: {level.name}")
-
-    asyncio.run(main())
-    ```
-
-### Paginated Search
+### Get User's Created Levels
 
 === "Synchronous"
 
@@ -223,11 +44,10 @@ This page contains various usage examples for gdpy.
     from gdpy import Client
 
     with Client() as client:
-        for page in range(3):
-            levels = client.search_levels(query="", limit=10, page=page)
-            print(f"Page {page}: {len(levels)} levels")
-            for level in levels:
-                print(f"  - {level.name}")
+        user = client.get_user(account_id=71)  # RobTop
+        levels = client.get_user_levels(user_id=user.user_id, limit=10)
+        for level in levels:
+            print(f"{level.name} - {level.downloads:,} downloads")
     ```
 
 === "Asynchronous"
@@ -238,9 +58,10 @@ This page contains various usage examples for gdpy.
 
     async def main():
         async with AsyncClient() as client:
-            for page in range(3):
-                levels = await client.search_levels(query="", limit=10, page=page)
-                print(f"Page {page}: {len(levels)} levels")
+            user = await client.get_user(account_id=71)
+            levels = await client.get_user_levels(user_id=user.user_id, limit=10)
+            for level in levels:
+                print(f"{level.name} - {level.downloads:,} downloads")
 
     asyncio.run(main())
     ```
@@ -285,20 +106,28 @@ This page contains various usage examples for gdpy.
 
 ### Register Account
 
+Note: GD rejects temporary email addresses. Use a real email.
+
 === "Synchronous"
 
     ```python
     from gdpy import Client
-    from gdpy.exceptions import UsernameTakenError, EmailTakenError
+    from gdpy.exceptions import (
+        UsernameTakenError,
+        EmailTakenError,
+        InvalidEmailError,
+    )
 
     with Client() as client:
         try:
-            if client.register("newuser", "password123", "user@email.com"):
+            if client.register("newuser", "password123", "user@real-email.com"):
                 print("Account created!")
         except UsernameTakenError:
             print("Username already taken")
         except EmailTakenError:
             print("Email already registered")
+        except InvalidEmailError:
+            print("Invalid or blacklisted email")
     ```
 
 === "Asynchronous"
@@ -306,17 +135,23 @@ This page contains various usage examples for gdpy.
     ```python
     import asyncio
     from gdpy import AsyncClient
-    from gdpy.exceptions import UsernameTakenError, EmailTakenError
+    from gdpy.exceptions import (
+        UsernameTakenError,
+        EmailTakenError,
+        InvalidEmailError,
+    )
 
     async def main():
         async with AsyncClient() as client:
             try:
-                if await client.register("newuser", "password123", "user@email.com"):
+                if await client.register("newuser", "password123", "user@real-email.com"):
                     print("Account created!")
             except UsernameTakenError:
                 print("Username already taken")
             except EmailTakenError:
                 print("Email already registered")
+            except InvalidEmailError:
+                print("Invalid or blacklisted email")
 
     asyncio.run(main())
     ```
@@ -378,6 +213,7 @@ This page contains various usage examples for gdpy.
         EmailTakenError,
         PasswordTooShortError,
         UsernameTooShortError,
+        InvalidEmailError,
     )
 
     with Client() as client:
@@ -391,6 +227,8 @@ This page contains various usage examples for gdpy.
             print("Password must be at least 6 characters")
         except UsernameTooShortError:
             print("Username must be at least 3 characters")
+        except InvalidEmailError:
+            print("Invalid or blacklisted email")
     ```
 
 === "Asynchronous"
@@ -403,6 +241,7 @@ This page contains various usage examples for gdpy.
         EmailTakenError,
         PasswordTooShortError,
         UsernameTooShortError,
+        InvalidEmailError,
     )
 
     async def main():
@@ -417,6 +256,8 @@ This page contains various usage examples for gdpy.
                 print("Password must be at least 6 characters")
             except UsernameTooShortError:
                 print("Username must be at least 3 characters")
+            except InvalidEmailError:
+                print("Invalid or blacklisted email")
 
     asyncio.run(main())
     ```
@@ -551,127 +392,9 @@ This page contains various usage examples for gdpy.
     asyncio.run(main())
     ```
 
-## Songs
-
-### Get Song Info
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        song = client.get_song(song_id=803223)  # Xtrullor - Arcana
-        print(f"Song: {song.name}")
-        print(f"Artist: {song.author}")
-        print(f"Size: {song.size} MB")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            song = await client.get_song(song_id=803223)
-            print(f"Song: {song.name}")
-            print(f"Artist: {song.author}")
-
-    asyncio.run(main())
-    ```
-
-## Comments
-
-### Get Level Comments
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        comments = client.get_level_comments(level_id=3009486, limit=10)
-        for comment in comments:
-            print(f"{comment.author}: {comment.content}")
-            print(f"  Likes: {comment.likes}")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            comments = await client.get_level_comments(level_id=3009486, limit=10)
-            for comment in comments:
-                print(f"{comment.author}: {comment.content}")
-
-    asyncio.run(main())
-    ```
-
-## Leaderboards
-
-### Global Leaderboard
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        leaderboard = client.get_leaderboard(limit=10)
-        for i, entry in enumerate(leaderboard, 1):
-            print(f"#{i}: {entry.username} - {entry.stars} stars")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            leaderboard = await client.get_leaderboard(limit=10)
-            for i, entry in enumerate(leaderboard, 1):
-                print(f"#{i}: {entry.username} - {entry.stars} stars")
-
-    asyncio.run(main())
-    ```
-
-### Creator Leaderboard
-
-=== "Synchronous"
-
-    ```python
-    from gdpy import Client
-
-    with Client() as client:
-        creators = client.get_leaderboard(limit=10, type="creators")
-        for i, entry in enumerate(creators, 1):
-            print(f"#{i}: {entry.username} - {entry.creator_points} CP")
-    ```
-
-=== "Asynchronous"
-
-    ```python
-    import asyncio
-    from gdpy import AsyncClient
-
-    async def main():
-        async with AsyncClient() as client:
-            creators = await client.get_leaderboard(limit=10, type="creators")
-            for i, entry in enumerate(creators, 1):
-                print(f"#{i}: {entry.username} - {entry.creator_points} CP")
-
-    asyncio.run(main())
-    ```
-
 ## Async Concurrent Requests
+
+Fetch multiple resources concurrently using `asyncio.gather`:
 
 ```python
 import asyncio
@@ -691,3 +414,33 @@ async def fetch_multiple_users():
 
 asyncio.run(fetch_multiple_users())
 ```
+
+## Custom Base URL
+
+Connect to private Geometry Dash servers:
+
+=== "Synchronous"
+
+    ```python
+    from gdpy import Client
+
+    # Use a custom server
+    with Client(base_url="https://custom-gd-server.com/database") as client:
+        user = client.get_user(account_id=1)
+        print(user.username)
+    ```
+
+=== "Asynchronous"
+
+    ```python
+    import asyncio
+    from gdpy import AsyncClient
+
+    async def main():
+        # Use a custom server
+        async with AsyncClient(base_url="https://custom-gd-server.com/database") as client:
+            user = await client.get_user(account_id=1)
+            print(user.username)
+
+    asyncio.run(main())
+    ```
