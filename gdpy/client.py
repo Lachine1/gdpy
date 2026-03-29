@@ -22,10 +22,12 @@ from gdpy.exceptions import (
 from gdpy.models import (
     Comment,
     DailyLevel,
+    FriendRequest,
     Gauntlet,
     LeaderboardScore,
     Level,
     MapPack,
+    Message,
     Song,
     TopArtist,
     User,
@@ -538,6 +540,484 @@ class Client:
             comments.append(Comment.model_validate(comment_data))
         return comments
 
+    def get_messages(self, limit: int = 10, page: int = 0, sent: bool = False) -> list[Message]:
+        """Get inbox or sent messages. Requires authentication.
+
+        Args:
+            limit: Maximum number of messages to return.
+            page: Page number for pagination.
+            sent: If True, get sent messages instead of inbox.
+
+        Returns:
+            List of Message objects.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get messages")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "page": str(page),
+            "total": str(limit),
+            "getSent": "1" if sent else "0",
+        }
+        response = self._request("getGJMessages20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        messages_data = parse_list_response(parts[0])
+        return [Message.model_validate(m) for m in messages_data]
+
+    def get_message(self, message_id: int) -> Message:
+        """Download full message content. Requires authentication.
+
+        Args:
+            message_id: The message ID to download.
+
+        Returns:
+            Message object with full content.
+
+        Raises:
+            RuntimeError: If not authenticated.
+            NotFoundError: If message not found.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "messageID": str(message_id),
+        }
+        response = self._request("downloadGJMessage20.php", data)
+        if response.startswith("-"):
+            self._handle_error(response)
+        parsed = parse_response(response)
+        return Message.model_validate(parsed)
+
+    def send_message(self, recipient_id: int, subject: str, body: str) -> bool:
+        """Send a private message. Requires authentication.
+
+        Args:
+            recipient_id: The recipient's account ID.
+            subject: Message subject.
+            body: Message body.
+
+        Returns:
+            True if message sent successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to send message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "toAccountID": str(recipient_id),
+            "subject": base64.b64encode(subject.encode()).decode(),
+            "body": base64.b64encode(body.encode()).decode(),
+        }
+        response = self._request("uploadGJMessage20.php", data)
+        return response != "-1"
+
+    def delete_message(self, message_id: int) -> bool:
+        """Delete a message. Requires authentication.
+
+        Args:
+            message_id: The message ID to delete.
+
+        Returns:
+            True if deleted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "messageID": str(message_id),
+        }
+        response = self._request("deleteGJMessages20.php", data)
+        return response == "1"
+
+    def get_friend_requests(
+        self, limit: int = 10, page: int = 0, sent: bool = False
+    ) -> list[FriendRequest]:
+        """Get friend requests. Requires authentication.
+
+        Args:
+            limit: Maximum number of requests to return.
+            page: Page number for pagination.
+            sent: If True, get sent requests instead of received.
+
+        Returns:
+            List of FriendRequest objects.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get friend requests")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "page": str(page),
+            "total": str(limit),
+            "getSent": "1" if sent else "0",
+        }
+        response = self._request("getGJFriendRequests20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        requests_data = parse_list_response(parts[0])
+        return [FriendRequest.model_validate(r) for r in requests_data]
+
+    def send_friend_request(self, recipient_id: int, message: str = "") -> bool:
+        """Send a friend request. Requires authentication.
+
+        Args:
+            recipient_id: The recipient's account ID.
+            message: Optional message with the request.
+
+        Returns:
+            True if request sent successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to send friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "toAccountID": str(recipient_id),
+            "comment": base64.b64encode(message.encode()).decode() if message else "",
+        }
+        response = self._request("uploadFriendRequest20.php", data)
+        return response != "-1"
+
+    def accept_friend_request(self, request_id: int) -> bool:
+        """Accept a friend request. Requires authentication.
+
+        Args:
+            request_id: The friend request ID.
+
+        Returns:
+            True if accepted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to accept friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "requestID": str(request_id),
+        }
+        response = self._request("acceptGJFriendRequest20.php", data)
+        return response == "1"
+
+    def delete_friend_request(self, request_id: int) -> bool:
+        """Delete a friend request. Requires authentication.
+
+        Args:
+            request_id: The friend request ID.
+
+        Returns:
+            True if deleted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "requestID": str(request_id),
+        }
+        response = self._request("deleteGJFriendRequests20.php", data)
+        return response == "1"
+
+    def get_friends(self) -> list[User]:
+        """Get friends list. Requires authentication.
+
+        Returns:
+            List of User objects.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get friends")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "type": "0",
+        }
+        response = self._request("getGJUserList20.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    def remove_friend(self, friend_id: int) -> bool:
+        """Remove a friend. Requires authentication.
+
+        Args:
+            friend_id: The friend's account ID.
+
+        Returns:
+            True if removed successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to remove friend")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(friend_id),
+        }
+        response = self._request("removeGJFriend20.php", data)
+        return response == "1"
+
+    def block_user(self, user_id: int) -> bool:
+        """Block a user. Requires authentication.
+
+        Args:
+            user_id: The user's account ID to block.
+
+        Returns:
+            True if blocked successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to block user")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(user_id),
+        }
+        response = self._request("blockGJUser20.php", data)
+        return response == "1"
+
+    def unblock_user(self, user_id: int) -> bool:
+        """Unblock a user. Requires authentication.
+
+        Args:
+            user_id: The user's account ID to unblock.
+
+        Returns:
+            True if unblocked successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to unblock user")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(user_id),
+        }
+        response = self._request("unblockGJUser20.php", data)
+        return response == "1"
+
+    def get_blocked_users(self) -> list[User]:
+        """Get blocked users list. Requires authentication.
+
+        Returns:
+            List of User objects.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get blocked users")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "type": "1",
+        }
+        response = self._request("getGJUserList20.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    def like_level(self, level_id: int, like: bool = True) -> bool:
+        """Like or dislike a level.
+
+        Args:
+            level_id: The level ID.
+            like: True to like, False to dislike.
+
+        Returns:
+            True if successful.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to like levels")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "itemID": str(level_id),
+            "type": "1",
+            "like": "1" if like else "0",
+        }
+        response = self._request("likeGJItem211.php", data)
+        return response == "1"
+
+    def like_comment(self, comment_id: int, like: bool = True) -> bool:
+        """Like or dislike a level comment.
+
+        Args:
+            comment_id: The comment ID.
+            like: True to like, False to dislike.
+
+        Returns:
+            True if successful.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to like comments")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "itemID": str(comment_id),
+            "type": "2",
+            "like": "1" if like else "0",
+        }
+        response = self._request("likeGJItem211.php", data)
+        return response == "1"
+
+    def post_level_comment(self, level_id: int, content: str, percent: int = 0) -> int | None:
+        """Post a comment on a level. Requires authentication.
+
+        Args:
+            level_id: The level ID to comment on.
+            content: The comment content.
+            percent: Optional percentage to display.
+
+        Returns:
+            Comment ID if successful, None otherwise.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to post comment")
+        encoded_content = base64.b64encode(content.encode()).decode()
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "userName": self._username,
+            "comment": encoded_content,
+            "levelID": str(level_id),
+            "percent": str(percent),
+        }
+        response = self._request("uploadGJComment21.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    def delete_level_comment(self, comment_id: int, level_id: int) -> bool:
+        """Delete a level comment. Requires authentication.
+
+        Args:
+            comment_id: The comment ID to delete.
+            level_id: The level ID the comment is on.
+
+        Returns:
+            True if deleted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete comment")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "commentID": str(comment_id),
+            "levelID": str(level_id),
+        }
+        response = self._request("deleteGJComment20.php", data)
+        return response == "1"
+
+    def post_profile_comment(self, content: str) -> int | None:
+        """Post a comment on your profile. Requires authentication.
+
+        Args:
+            content: The comment content.
+
+        Returns:
+            Comment ID if successful, None otherwise.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to post profile comment")
+        encoded_content = base64.b64encode(content.encode()).decode()
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "userName": self._username,
+            "comment": encoded_content,
+        }
+        response = self._request("uploadGJAccComment20.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    def delete_profile_comment(self, comment_id: int) -> bool:
+        """Delete a profile comment. Requires authentication.
+
+        Args:
+            comment_id: The comment ID to delete.
+
+        Returns:
+            True if deleted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete profile comment")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "commentID": str(comment_id),
+        }
+        response = self._request("deleteGJAccComment20.php", data)
+        return response == "1"
+
 
 class AsyncClient:
     """Asynchronous client for interacting with the Geometry Dash API.
@@ -1045,5 +1525,288 @@ class AsyncClient:
             if len(comment_parts) > 1:
                 user_data = parse_response(comment_parts[1])
                 comment_data["username"] = user_data.get("1", "")
-            comments.append(Comment.model_validate(comment_data))
+                comments.append(Comment.model_validate(comment_data))
         return comments
+
+    async def get_messages(
+        self, limit: int = 10, page: int = 0, sent: bool = False
+    ) -> list[Message]:
+        """Get inbox or sent messages. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get messages")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "page": str(page),
+            "total": str(limit),
+            "getSent": "1" if sent else "0",
+        }
+        response = await self._request("getGJMessages20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        messages_data = parse_list_response(parts[0])
+        return [Message.model_validate(m) for m in messages_data]
+
+    async def get_message(self, message_id: int) -> Message:
+        """Download full message content. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "messageID": str(message_id),
+        }
+        response = await self._request("downloadGJMessage20.php", data)
+        if response.startswith("-"):
+            self._handle_error(response)
+        parsed = parse_response(response)
+        return Message.model_validate(parsed)
+
+    async def send_message(self, recipient_id: int, subject: str, body: str) -> bool:
+        """Send a private message. Requires authentication."""
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to send message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "toAccountID": str(recipient_id),
+            "subject": base64.b64encode(subject.encode()).decode(),
+            "body": base64.b64encode(body.encode()).decode(),
+        }
+        response = await self._request("uploadGJMessage20.php", data)
+        return response != "-1"
+
+    async def delete_message(self, message_id: int) -> bool:
+        """Delete a message. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete message")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "messageID": str(message_id),
+        }
+        response = await self._request("deleteGJMessages20.php", data)
+        return response == "1"
+
+    async def get_friend_requests(
+        self, limit: int = 10, page: int = 0, sent: bool = False
+    ) -> list[FriendRequest]:
+        """Get friend requests. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get friend requests")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "page": str(page),
+            "total": str(limit),
+            "getSent": "1" if sent else "0",
+        }
+        response = await self._request("getGJFriendRequests20.php", data)
+        if response.startswith("-"):
+            return []
+        parts = response.split("#")
+        if not parts:
+            return []
+        requests_data = parse_list_response(parts[0])
+        return [FriendRequest.model_validate(r) for r in requests_data]
+
+    async def send_friend_request(self, recipient_id: int, message: str = "") -> bool:
+        """Send a friend request. Requires authentication."""
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to send friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "toAccountID": str(recipient_id),
+            "comment": base64.b64encode(message.encode()).decode() if message else "",
+        }
+        response = await self._request("uploadFriendRequest20.php", data)
+        return response != "-1"
+
+    async def accept_friend_request(self, request_id: int) -> bool:
+        """Accept a friend request. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to accept friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "requestID": str(request_id),
+        }
+        response = await self._request("acceptGJFriendRequest20.php", data)
+        return response == "1"
+
+    async def delete_friend_request(self, request_id: int) -> bool:
+        """Delete a friend request. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete friend request")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "requestID": str(request_id),
+        }
+        response = await self._request("deleteGJFriendRequests20.php", data)
+        return response == "1"
+
+    async def get_friends(self) -> list[User]:
+        """Get friends list. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get friends")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "type": "0",
+        }
+        response = await self._request("getGJUserList20.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    async def remove_friend(self, friend_id: int) -> bool:
+        """Remove a friend. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to remove friend")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(friend_id),
+        }
+        response = await self._request("removeGJFriend20.php", data)
+        return response == "1"
+
+    async def block_user(self, user_id: int) -> bool:
+        """Block a user. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to block user")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(user_id),
+        }
+        response = await self._request("blockGJUser20.php", data)
+        return response == "1"
+
+    async def unblock_user(self, user_id: int) -> bool:
+        """Unblock a user. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to unblock user")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "targetAccountID": str(user_id),
+        }
+        response = await self._request("unblockGJUser20.php", data)
+        return response == "1"
+
+    async def get_blocked_users(self) -> list[User]:
+        """Get blocked users list. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to get blocked users")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "type": "1",
+        }
+        response = await self._request("getGJUserList20.php", data)
+        if response.startswith("-"):
+            return []
+        users_data = parse_list_response(response)
+        return [User.model_validate(u) for u in users_data]
+
+    async def like_level(self, level_id: int, like: bool = True) -> bool:
+        """Like or dislike a level."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to like levels")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "itemID": str(level_id),
+            "type": "1",
+            "like": "1" if like else "0",
+        }
+        response = await self._request("likeGJItem211.php", data)
+        return response == "1"
+
+    async def like_comment(self, comment_id: int, like: bool = True) -> bool:
+        """Like or dislike a level comment."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to like comments")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "itemID": str(comment_id),
+            "type": "2",
+            "like": "1" if like else "0",
+        }
+        response = await self._request("likeGJItem211.php", data)
+        return response == "1"
+
+    async def post_level_comment(self, level_id: int, content: str, percent: int = 0) -> int | None:
+        """Post a comment on a level. Requires authentication."""
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to post comment")
+        encoded_content = base64.b64encode(content.encode()).decode()
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "userName": self._username,
+            "comment": encoded_content,
+            "levelID": str(level_id),
+            "percent": str(percent),
+        }
+        response = await self._request("uploadGJComment21.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    async def delete_level_comment(self, comment_id: int, level_id: int) -> bool:
+        """Delete a level comment. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete comment")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "commentID": str(comment_id),
+            "levelID": str(level_id),
+        }
+        response = await self._request("deleteGJComment20.php", data)
+        return response == "1"
+
+    async def post_profile_comment(self, content: str) -> int | None:
+        """Post a comment on your profile. Requires authentication."""
+        import base64
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to post profile comment")
+        encoded_content = base64.b64encode(content.encode()).decode()
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "userName": self._username,
+            "comment": encoded_content,
+        }
+        response = await self._request("uploadGJAccComment20.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    async def delete_profile_comment(self, comment_id: int) -> bool:
+        """Delete a profile comment. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete profile comment")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": generate_gjp2(self._password),
+            "commentID": str(comment_id),
+        }
+        response = await self._request("deleteGJAccComment20.php", data)
+        return response == "1"

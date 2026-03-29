@@ -10,7 +10,7 @@ Instead of manually crafting HTTP requests and parsing custom response formats, 
 - **Full type safety** — IDE autocomplete and catch errors before runtime with Pydantic models
 - **Built-in crypto** — GJP2 encoding, XOR ciphers, and checksums handled automatically
 
-Raw `httpx` requires understanding GD's custom formats and encryption. gdpy abstracts that away.
+Raw requests require understanding GD's custom formats and encryption. gdpy abstracts that away.
 
 ## Features
 

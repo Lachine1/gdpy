@@ -499,6 +499,65 @@ class DailyLevel(BaseModel):
     time_left: int = Field(default=0)
 
 
+class Message(BaseModel):
+    """Represents a private message.
+
+    Attributes:
+        message_id: Unique message identifier.
+        subject: Message subject (base64 decoded).
+        sender_id: Sender's account ID.
+        sender_name: Sender's username.
+        age: How long ago the message was sent.
+        is_read: Whether the message has been read.
+        content: Message content (base64 decoded, only when downloading).
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    message_id: int = Field(alias="6")
+    subject: str = Field(default="", alias="4")
+    sender_id: int = Field(default=0, alias="3")
+    sender_name: str = Field(default="", alias="1")
+    age: str = Field(default="", alias="7")
+    is_read: bool = Field(default=False, alias="8")
+    content: str | None = Field(default=None, alias="1")
+
+    @field_validator("subject", "content", mode="before")
+    @classmethod
+    def decode_base64(cls, v: Any) -> str | None:
+        """Decode base64 encoded message content."""
+        if v is None:
+            return None
+        if isinstance(v, str):
+            try:
+                import base64
+
+                return base64.b64decode(v).decode("utf-8")
+            except Exception:
+                return v
+        return str(v) if v else None
+
+
+class FriendRequest(BaseModel):
+    """Represents a friend request.
+
+    Attributes:
+        request_id: Unique request identifier.
+        sender_id: Sender's account ID.
+        sender_name: Sender's username.
+        age: How long ago the request was sent.
+        is_read: Whether the request has been read.
+    """
+
+    model_config = ConfigDict(populate_by_name=True, extra="allow")
+
+    request_id: int = Field(alias="32")
+    sender_id: int = Field(default=0, alias="3")
+    sender_name: str = Field(default="", alias="1")
+    age: str = Field(default="", alias="37")
+    is_read: bool = Field(default=False, alias="14")
+
+
 class TopArtist(BaseModel):
     """Represents a top artist.
 
