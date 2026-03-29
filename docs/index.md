@@ -26,14 +26,12 @@ Raw `httpx` requires understanding GD's custom formats and encryption. gdpy abst
 
 | Category | Implemented | Total | Coverage |
 | :--- | :---: | :---: | :---: |
-| Authentication | 2 | 2 | 100% |
-| Users | 4 | 4 | 100% |
-| Levels | 7 | 13 | 54% |
+| Accounts | 2 | 5 | 40% |
+| Users | 3 | 4 | 75% |
+| Levels | 6 | 14 | 43% |
 | Comments | 3 | 7 | 43% |
-| Songs | 2 | 3 | 67% |
-| Social | 0 | 8 | 0% |
-| Messages | 0 | 4 | 0% |
-| **Total** | **18** | **43** | **42%** |
+| Songs | 2 | 6 | 33% |
+| **Total** | **16** | **62** | **26%** |
 
 See [API Coverage](api-coverage.md) for detailed endpoint status.
 

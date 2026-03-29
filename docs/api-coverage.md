@@ -6,15 +6,17 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Category | Implemented | Total | Coverage |
 | :--- | :---: | :---: | :---: |
-| Authentication | 2 | 2 | 100% |
-| Users | 4 | 4 | 100% |
-| Levels | 7 | 13 | 54% |
+| Accounts | 2 | 5 | 40% |
+| Users | 3 | 4 | 75% |
+| Levels | 6 | 14 | 43% |
 | Comments | 3 | 7 | 43% |
-| Songs | 2 | 3 | 67% |
-| Social | 0 | 8 | 0% |
-| Messages | 0 | 4 | 0% |
-| Rewards | 0 | 2 | 0% |
-| **Total** | **18** | **43** | **42%** |
+| Songs | 2 | 6 | 33% |
+| Social | 0 | 12 | 0% |
+| Messages | 0 | 2 | 0% |
+| Rewards | 0 | 3 | 0% |
+| Lists | 0 | 3 | 0% |
+| Misc | 0 | 6 | 0% |
+| **Total** | **16** | **62** | **26%** |
 
 ## Legend
 
@@ -26,12 +28,15 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 ---
 
-## Authentication
+## Accounts
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
 | `accounts/loginGJAccount.php` | `login()` | :white_check_mark: | Login with username/password |
 | `accounts/registerGJAccount.php` | `register()` | :warning: | Pre-2.2 API; rejects temp emails |
+| `accounts/backupGJAccountNew.php` | - | :x: | Backup account (requires auth) |
+| `accounts/syncGJAccountNew.php` | - | :x: | Sync account (requires auth) |
+| `updateGJAccSettings20.php` | - | :x: | Update account settings (requires auth) |
 
 ---
 
@@ -63,6 +68,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `suggestGJStars20.php` | - | :x: | Suggest stars for level (requires auth) |
 | `reportGJLevel.php` | - | :x: | Report level (requires auth) |
 | `getGJLevelScores211.php` | - | :x: | Get level leaderboard (requires auth) |
+| `updateGJDesc20.php` | - | :x: | Update level description (requires auth) |
 
 ---
 
@@ -87,6 +93,9 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `getGJSongInfo.php` | `get_song()` | :white_check_mark: | Get song info by ID |
 | `getGJTopArtists.php` | `get_top_artists()` | :white_check_mark: | Get top artists |
 | `testSong.php` | - | :x: | Test song availability |
+| `getCustomContentURL.php` | - | :x: | Get custom content URL |
+| `musiclibrary_02.dat` | - | :x: | Music library |
+| `sfxlibrary.dat` | - | :x: | SFX library |
 
 ---
 
@@ -95,24 +104,17 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
 | `getGJFriendRequests20.php` | - | :x: | Get friend requests (requires auth) |
-| `uploadGJFriendRequest20.php` | - | :x: | Send friend request (requires auth) |
+| `uploadFriendRequest20.php` | - | :x: | Send friend request (requires auth) |
 | `acceptGJFriendRequest20.php` | - | :x: | Accept friend request (requires auth) |
-| `deleteGJFriendRequest20.php` | - | :x: | Delete friend request (requires auth) |
+| `deleteGJFriendRequests20.php` | - | :x: | Delete friend request (requires auth) |
+| `readGJFriendRequest20.php` | - | :x: | Mark friend request as read (requires auth) |
 | `removeGJFriend20.php` | - | :x: | Remove friend (requires auth) |
 | `getGJUserList20.php` | - | :x: | Get friends list (requires auth) |
 | `blockGJUser20.php` | - | :x: | Block user (requires auth) |
 | `unblockGJUser20.php` | - | :x: | Unblock user (requires auth) |
-
----
-
-## Messages
-
-| Endpoint | Method | Status | Notes |
-| :--- | :--- | :--- | :--- |
 | `getGJMessages20.php` | - | :x: | Get messages (requires auth) |
 | `downloadGJMessage20.php` | - | :x: | Download message content (requires auth) |
 | `uploadGJMessage20.php` | - | :x: | Send message (requires auth) |
-| `deleteGJMessages20.php` | - | :x: | Delete message(s) (requires auth) |
 
 ---
 
@@ -122,12 +124,37 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | :--- | :--- | :--- | :--- |
 | `getGJChallenges.php` | - | :x: | Get quests/challenges (requires auth) |
 | `getGJRewards.php` | - | :x: | Get rewards (requires auth) |
+| `getGJSecretReward.php` | - | :x: | Get secret reward (requires auth) |
+
+---
+
+## Lists
+
+| Endpoint | Method | Status | Notes |
+| :--- | :--- | :--- | :--- |
+| `getGJLevelLists.php` | - | :x: | Get level lists |
+| `uploadGJLevelList.php` | - | :x: | Upload level list (requires auth) |
+| `deleteGJLevelList.php` | - | :x: | Delete level list (requires auth) |
+
+---
+
+## Misc
+
+| Endpoint | Method | Status | Notes |
+| :--- | :--- | :--- | :--- |
+| `getAccountURL.php` | - | :x: | Get account server URL |
+| `getSaveData.php` | - | :x: | Get save data (requires auth) |
+| `getTop1000.php` | - | :x: | Get top 1000 users |
+| `likeGJItem211.php` | - | :x: | Like an item (requires auth) |
+| `requestUserAccess.php` | - | :x: | Request user access |
+| `restoreGJItems.php` | - | :x: | Restore deleted items (requires auth) |
 
 ---
 
 ## Missing Features
 
 ### Requires Authentication
+
 - [ ] Upload/delete levels
 - [ ] Rate levels
 - [ ] Post/delete comments
@@ -139,10 +166,14 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 - [ ] Get quests/rewards
 - [ ] Get level leaderboard
 - [ ] Update user stats
+- [ ] Backup/sync account
 
 ### No Auth Required (Lower Priority)
+
 - [ ] Test song availability
+- [ ] Get top 1000 users
+- [ ] Get level lists
 
 ---
 
-**Note:** This coverage list is based on the [Geometry Dash API documentation](https://boomlings.dev).
+**Note:** This coverage list is based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
