@@ -464,6 +464,142 @@ class Client:
         packs_data = parse_list_response(parts[0])
         return [MapPack.model_validate(p) for p in packs_data]
 
+    def upload_level(
+        self,
+        name: str,
+        level_string: str,
+        description: str = "",
+        level_id: int = 0,
+        version: int = 1,
+        length: int = 0,
+        audio_track: int = 0,
+        song_id: int = 0,
+        password: int = 0,
+        original: int = 0,
+        two_player: bool = False,
+        objects: int = 1,
+        coins: int = 0,
+        requested_stars: int = 0,
+        unlisted: int = 0,
+        ldm: bool = False,
+    ) -> int | None:
+        """Upload a level. Requires authentication.
+
+        Args:
+            name: Level name.
+            level_string: Level data (will be compressed and encoded).
+            description: Level description.
+            level_id: 0 for new level, or existing level ID to update.
+            version: Level version number.
+            length: Level length (0=tiny, 4=XL, 5=platformer).
+            audio_track: Official song number (0 if using custom song).
+            song_id: Custom song ID (0 if using official song).
+            password: Copy password (0=none, 1=free copy).
+            original: Original level ID if copied.
+            two_player: Whether level uses two player mode.
+            objects: Number of objects in level.
+            coins: Number of user coins.
+            requested_stars: Requested star rating.
+            unlisted: 0=public, 1=friends only, 2=unlisted.
+            ldm: Whether level has low detail mode.
+
+        Returns:
+            The uploaded level ID, or None if failed.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        import base64
+        import gzip
+        import random
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to upload level")
+
+        # Compress and encode level string
+        compressed = gzip.compress(level_string.encode())
+        encoded_string = base64.urlsafe_b64encode(compressed).decode()
+
+        # Encode description
+        encoded_desc = base64.urlsafe_b64encode(description.encode()).decode()
+
+        # Generate seed2 (chk from first 50 chars of compressed data)
+        import hashlib
+
+        seed_data = compressed[:50] if len(compressed) >= 50 else compressed
+        seed2 = hashlib.sha1(seed_data + b"xI25fpAapCQg").hexdigest()
+
+        data = {
+            "gameVersion": "22",
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
+            "levelID": str(level_id),
+            "levelName": name,
+            "levelDesc": encoded_desc,
+            "levelVersion": str(version),
+            "levelLength": str(length),
+            "audioTrack": str(audio_track),
+            "auto": "0",
+            "password": str(password),
+            "original": str(original),
+            "twoPlayer": "1" if two_player else "0",
+            "songID": str(song_id),
+            "objects": str(objects),
+            "coins": str(coins),
+            "requestedStars": str(requested_stars),
+            "unlisted": str(unlisted),
+            "ldm": "1" if ldm else "0",
+            "levelString": encoded_string,
+            "seed2": seed2,
+            "secret": Secrets.COMMON,
+            "wt": str(random.randint(100, 99999)),
+            "wt2": str(random.randint(100, 99999)),
+        }
+        response = self._request("uploadGJLevel21.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    def delete_level(self, level_id: int) -> bool:
+        """Delete a level. Requires authentication.
+
+        Args:
+            level_id: The level ID to delete.
+
+        Returns:
+            True if deleted successfully.
+
+        Raises:
+            RuntimeError: If not authenticated.
+        """
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete level")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "levelID": str(level_id),
+            "secret": "Wmfv2898gc9",
+        }
+        response = self._request("deleteGJLevelUser20.php", data)
+        return response == "1"
+
+    def report_level(self, level_id: int) -> bool:
+        """Report a level.
+
+        Args:
+            level_id: The level ID to report.
+
+        Returns:
+            True if reported successfully.
+        """
+        data = {
+            "levelID": str(level_id),
+            "secret": Secrets.COMMON,
+        }
+        response = self._request("reportGJLevel.php", data)
+        return response == "1"
+
     def get_top_artists(self, page: int = 0) -> list[TopArtist]:
         """Get RobTop's handpicked top artists.
 
@@ -1617,6 +1753,95 @@ class AsyncClient:
             return []
         packs_data = parse_list_response(parts[0])
         return [MapPack.model_validate(p) for p in packs_data]
+
+    async def upload_level(
+        self,
+        name: str,
+        level_string: str,
+        description: str = "",
+        level_id: int = 0,
+        version: int = 1,
+        length: int = 0,
+        audio_track: int = 0,
+        song_id: int = 0,
+        password: int = 0,
+        original: int = 0,
+        two_player: bool = False,
+        objects: int = 1,
+        coins: int = 0,
+        requested_stars: int = 0,
+        unlisted: int = 0,
+        ldm: bool = False,
+    ) -> int | None:
+        """Upload a level. Requires authentication."""
+        import base64
+        import gzip
+        import hashlib
+        import random
+
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to upload level")
+
+        compressed = gzip.compress(level_string.encode())
+        encoded_string = base64.urlsafe_b64encode(compressed).decode()
+        encoded_desc = base64.urlsafe_b64encode(description.encode()).decode()
+
+        seed_data = compressed[:50] if len(compressed) >= 50 else compressed
+        seed2 = hashlib.sha1(seed_data + b"xI25fpAapCQg").hexdigest()
+
+        data = {
+            "gameVersion": "22",
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "userName": self._username or "",
+            "levelID": str(level_id),
+            "levelName": name,
+            "levelDesc": encoded_desc,
+            "levelVersion": str(version),
+            "levelLength": str(length),
+            "audioTrack": str(audio_track),
+            "auto": "0",
+            "password": str(password),
+            "original": str(original),
+            "twoPlayer": "1" if two_player else "0",
+            "songID": str(song_id),
+            "objects": str(objects),
+            "coins": str(coins),
+            "requestedStars": str(requested_stars),
+            "unlisted": str(unlisted),
+            "ldm": "1" if ldm else "0",
+            "levelString": encoded_string,
+            "seed2": seed2,
+            "secret": Secrets.COMMON,
+            "wt": str(random.randint(100, 99999)),
+            "wt2": str(random.randint(100, 99999)),
+        }
+        response = await self._request("uploadGJLevel21.php", data)
+        if response.startswith("-"):
+            return None
+        return int(response) if response.isdigit() else None
+
+    async def delete_level(self, level_id: int) -> bool:
+        """Delete a level. Requires authentication."""
+        if not self.is_authenticated:
+            raise RuntimeError("Must be authenticated to delete level")
+        data = {
+            "accountID": str(self._account_id),
+            "gjp2": self._get_gjp2(),
+            "levelID": str(level_id),
+            "secret": "Wmfv2898gc9",
+        }
+        response = await self._request("deleteGJLevelUser20.php", data)
+        return response == "1"
+
+    async def report_level(self, level_id: int) -> bool:
+        """Report a level."""
+        data = {
+            "levelID": str(level_id),
+            "secret": Secrets.COMMON,
+        }
+        response = await self._request("reportGJLevel.php", data)
+        return response == "1"
 
     async def get_top_artists(self, page: int = 0) -> list[TopArtist]:
         """Get RobTop's handpicked top artists.

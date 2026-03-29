@@ -134,7 +134,11 @@ class LevelDifficulty(IntEnum):
         HARD: Hard difficulty.
         HARDER: Harder difficulty.
         INSANE: Insane difficulty.
-        DEMON: Demon difficulty.
+        EASY_DEMON: Easy demon.
+        MEDIUM_DEMON: Medium demon.
+        HARD_DEMON: Hard demon (default demon).
+        INSANE_DEMON: Insane demon.
+        EXTREME_DEMON: Extreme demon.
     """
 
     UNSPECIFIED = 0
@@ -144,25 +148,11 @@ class LevelDifficulty(IntEnum):
     HARD = 4
     HARDER = 5
     INSANE = 6
-    DEMON = 7
-
-
-class DemonDifficulty(IntEnum):
-    """Demon level difficulty rating.
-
-    Attributes:
-        EASY: Easy demon.
-        MEDIUM: Medium demon.
-        HARD: Hard demon.
-        INSANE: Insane demon.
-        EXTREME: Extreme demon.
-    """
-
-    EASY = 3
-    MEDIUM = 4
-    HARD = 0
-    INSANE = 5
-    EXTREME = 6
+    EASY_DEMON = 7
+    MEDIUM_DEMON = 8
+    HARD_DEMON = 9
+    INSANE_DEMON = 10
+    EXTREME_DEMON = 11
 
 
 class LevelLength(IntEnum):
@@ -214,8 +204,7 @@ class Level(BaseModel):
         downloads: Total downloads.
         likes: Total likes.
         stars: Star rating (0 if not rated).
-        is_demon: Whether level is a demon.
-        is_auto: Whether level is auto.
+        difficulty: Level difficulty (includes AUTO and demon difficulties).
         featured: Whether level is featured.
         objects: Object count in level.
         length: Level length classification.
@@ -225,15 +214,14 @@ class Level(BaseModel):
         verified_coins: Whether coins are verified.
         two_player: Whether level supports two players.
         level_string: Level data (only in downloads).
-        demon_difficulty: Demon difficulty (if demon).
         epic_rating: Epic/legendary/mythic rating.
         password: Level password (if copyable).
 
     Example:
-        ```python
-        level = await client.get_level(level_id=3009486)
-        print(f"{level.name} has {level.objects} objects")
-        ```
+    ```python
+    level = await client.get_level(level_id=3009486)
+    print(f"{level.name} has {level.objects} objects")
+    ```
     """
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")
@@ -246,8 +234,7 @@ class Level(BaseModel):
     downloads: int = Field(default=0, alias="10")
     likes: int = Field(default=0, alias="14")
     stars: int = Field(default=0, alias="18")
-    is_demon: bool = Field(default=False, alias="17")
-    is_auto: bool = Field(default=False, alias="25")
+    difficulty: LevelDifficulty = Field(default=LevelDifficulty.UNSPECIFIED)
     featured: bool = Field(default=False, alias="19")
     objects: int = Field(default=0, alias="45")
     length: LevelLength = Field(default=LevelLength.MEDIUM, alias="15")
@@ -257,13 +244,31 @@ class Level(BaseModel):
     verified_coins: bool = Field(default=False, alias="38")
     two_player: bool = Field(default=False, alias="31")
     level_string: str | None = Field(default=None, alias="4")
-    demon_difficulty: DemonDifficulty | None = Field(default=None, alias="43")
     epic_rating: EpicRating = Field(default=EpicRating.NONE, alias="42")
     password: str | None = Field(default=None, alias="27")
+    # Raw fields for computing difficulty
+    is_demon: bool = Field(default=False, alias="17")
+    is_auto: bool = Field(default=False, alias="25")
+    demon_difficulty_raw: int = Field(default=0, alias="43")
+
+    def get_difficulty(self) -> LevelDifficulty:
+        """Get the computed difficulty level."""
+        if self.is_auto:
+            return LevelDifficulty.AUTO
+        if self.is_demon:
+            # Map: 3=easy, 4=medium, 0=hard, 5=insane, 6=extreme
+            if self.demon_difficulty_raw == 3:
+                return LevelDifficulty.EASY_DEMON
+            elif self.demon_difficulty_raw == 4:
+                return LevelDifficulty.MEDIUM_DEMON
+            elif self.demon_difficulty_raw == 5:
+                return LevelDifficulty.INSANE_DEMON
+            elif self.demon_difficulty_raw == 6:
+                return LevelDifficulty.EXTREME_DEMON
+            return LevelDifficulty.HARD_DEMON
+        return LevelDifficulty.UNSPECIFIED
 
     @field_validator(
-        "is_demon",
-        "is_auto",
         "featured",
         "verified_coins",
         "two_player",
@@ -321,7 +326,7 @@ class Comment(BaseModel):
     """Represents a level or profile comment.
 
     Attributes:
-        content: Comment text content (base64 decoded).
+        content: Comment text content.
         author: Comment author's username.
         author_id: Comment author's user ID.
         likes: Number of likes on the comment.
@@ -483,12 +488,12 @@ class Message(BaseModel):
 
     Attributes:
         message_id: Unique message identifier.
-        subject: Message subject (base64 decoded).
+        subject: Message subject.
         sender_id: Sender's account ID.
         sender_name: Sender's username.
         age: How long ago the message was sent.
         is_read: Whether the message has been read.
-        content: Message content (base64 decoded, only when downloading).
+        content: Message content (only when downloading).
     """
 
     model_config = ConfigDict(populate_by_name=True, extra="allow")

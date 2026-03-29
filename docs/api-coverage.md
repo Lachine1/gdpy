@@ -8,7 +8,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | :--- | :---: | :---: | :---: |
 | Accounts | 3 | 5 | 60% |
 | Users | 4 | 4 | 100% |
-| Levels | 7 | 11 | 64% |
+| Levels | 10 | 11 | 91% |
 | Comments | 7 | 7 | 100% |
 | Songs | 3 | 6 | 50% |
 | Social | 12 | 12 | 100% |
@@ -16,7 +16,7 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Rewards | 2 | 3 | 67% |
 | Lists | 1 | 3 | 33% |
 | Misc | 2 | 2 | 100% |
-| **Total** | **45** | **57** | **79%** |
+| **Total** | **48** | **57** | **84%** |
 
 ## Legend
 
@@ -61,9 +61,9 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | `getGJDailyLevel.php` | `get_daily_level()` | :white_check_mark: | Get daily/weekly/event level |
 | `getGJGauntlets21.php` | `get_gauntlets()` | :white_check_mark: | Get gauntlets |
 | `getGJMapPacks21.php` | `get_map_packs()` | :white_check_mark: | Get map packs |
-| `uploadGJLevel21.php` | - | :x: | Upload level (requires auth) |
-| `deleteGJLevelUser20.php` | - | :x: | Delete level (requires auth) |
-| `reportGJLevel.php` | - | :x: | Report level (requires auth) |
+| `uploadGJLevel21.php` | `upload_level()` | :white_check_mark: | Upload level (requires auth) |
+| `deleteGJLevelUser20.php` | `delete_level()` | :white_check_mark: | Delete level (requires auth) |
+| `reportGJLevel.php` | `report_level()` | :white_check_mark: | Report level |
 | `getGJLevelScores211.php` | `get_level_scores()` | :white_check_mark: | Get level leaderboard (requires auth) |
 | `updateGJDesc20.php` | `update_level_description()` | :white_check_mark: | Update level description (requires auth) |
 
@@ -119,9 +119,9 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
-| `getGJChallenges.php` | - | :x: | Get quests/challenges (requires auth) |
-| `getGJRewards.php` | - | :x: | Get rewards (requires auth) |
-| `getGJSecretReward.php` | - | :x: | Get secret reward (requires auth) |
+| `getGJChallenges.php` | `get_challenges()` | :white_check_mark: | Get daily quests (requires auth) |
+| `getGJRewards.php` | `get_chest_rewards()` | :white_check_mark: | Get chest rewards (requires auth) |
+| `getGJSecretReward.php` | - | :x: | Secret vault reward (requires auth) |
 
 ---
 
@@ -172,8 +172,8 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 - [x] Update account settings
 - [x] Get daily quests
 - [x] Get chest rewards
-- [ ] Upload/delete levels
-- [ ] Rate levels
+- [x] Upload/delete levels
+- [x] Report levels
 - [ ] Secret vault reward
 - [ ] Backup/sync account
 
@@ -182,7 +182,6 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 - [x] Test song availability
 - [x] Get top 1000 users
 - [x] Get level lists
-- [x] Get save data
 
 ---
 
