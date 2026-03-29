@@ -15,8 +15,8 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 | Messages | 4 | 4 | 100% |
 | Rewards | 0 | 3 | 0% |
 | Lists | 1 | 3 | 33% |
-| Misc | 2 | 6 | 33% |
-| **Total** | **45** | **64** | **70%** |
+| Misc | 2 | 3 | 67% |
+| **Total** | **45** | **61** | **74%** |
 
 ## Legend
 
@@ -142,12 +142,9 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 
 | Endpoint | Method | Status | Notes |
 | :--- | :--- | :--- | :--- |
-| `getAccountURL.php` | - | :x: | Get account server URL |
 | `getSaveData.php` | - | :x: | Get save data (requires auth) |
 | `getTop1000.php` | `get_top_1000()` | :white_check_mark: | Get top 1000 users |
 | `likeGJItem211.php` | `like_level()`, `like_comment()` | :white_check_mark: | Like an item (requires auth) |
-| `requestUserAccess.php` | - | :x: | Request user access |
-| `restoreGJItems.php` | - | :x: | Restore deleted items (requires auth) |
 
 ---
 
@@ -162,13 +159,15 @@ This page documents which Geometry Dash API endpoints are implemented in gdpy.
 - [x] Block/unblock users
 - [x] Get/read/send messages
 - [x] Like levels/comments
+- [x] Mark friend request as read
+- [x] Update user stats
+- [x] Get level leaderboard
+- [x] Update level description
+- [x] Update account settings
 - [ ] Upload/delete levels
 - [ ] Rate levels
 - [ ] Get quests/rewards
-- [ ] Get level leaderboard
-- [ ] Update user stats
 - [ ] Backup/sync account
-- [ ] Mark friend request as read
 
 ### No Auth Required (Lower Priority)
 
