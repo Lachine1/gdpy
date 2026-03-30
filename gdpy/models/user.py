@@ -246,24 +246,35 @@ class Level(BaseModel):
     level_string: str | None = Field(default=None, alias="4")
     epic_rating: EpicRating = Field(default=EpicRating.NONE, alias="42")
     password: str | None = Field(default=None, alias="27")
-    # Raw fields for computing difficulty
-    is_demon: bool = Field(default=False, alias="17")
-    is_auto: bool = Field(default=False, alias="25")
-    demon_difficulty_raw: int = Field(default=0, alias="43")
 
-    def get_difficulty(self) -> LevelDifficulty:
-        """Get the computed difficulty level."""
-        if self.is_auto:
+    @field_validator("difficulty", mode="before")
+    @classmethod
+    def compute_difficulty(cls, v: Any, info: Any) -> LevelDifficulty:
+        """Compute difficulty from raw API fields."""
+        if isinstance(v, LevelDifficulty):
+            return v
+        # Get raw values from the data
+        data = info.data if hasattr(info, "data") else {}
+        raw_17 = data.get("17", "0")  # is_demon
+        raw_25 = data.get("25", "0")  # is_auto
+        raw_43 = data.get("43", "0")  # demon_difficulty
+
+        # Parse boolean strings
+        is_auto = raw_25 not in ("", "0") if isinstance(raw_25, str) else bool(raw_25)
+        is_demon = raw_17 not in ("", "0") if isinstance(raw_17, str) else bool(raw_17)
+        demon_diff = int(raw_43) if isinstance(raw_43, str) and raw_43.isdigit() else 0
+
+        if is_auto:
             return LevelDifficulty.AUTO
-        if self.is_demon:
+        if is_demon:
             # Map: 3=easy, 4=medium, 0=hard, 5=insane, 6=extreme
-            if self.demon_difficulty_raw == 3:
+            if demon_diff == 3:
                 return LevelDifficulty.EASY_DEMON
-            elif self.demon_difficulty_raw == 4:
+            elif demon_diff == 4:
                 return LevelDifficulty.MEDIUM_DEMON
-            elif self.demon_difficulty_raw == 5:
+            elif demon_diff == 5:
                 return LevelDifficulty.INSANE_DEMON
-            elif self.demon_difficulty_raw == 6:
+            elif demon_diff == 6:
                 return LevelDifficulty.EXTREME_DEMON
             return LevelDifficulty.HARD_DEMON
         return LevelDifficulty.UNSPECIFIED
@@ -272,8 +283,6 @@ class Level(BaseModel):
         "featured",
         "verified_coins",
         "two_player",
-        "is_demon",
-        "is_auto",
         mode="before",
     )
     @classmethod
