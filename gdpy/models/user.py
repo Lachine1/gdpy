@@ -253,7 +253,8 @@ class Level(BaseModel):
         """Compute difficulty from raw API fields.
 
         Uses:
-        - Key 9: difficulty_numerator (0=unrated, 10=easy, 20=normal, 30=hard, 40=harder, 50=insane)
+        - Key 9: difficulty_numerator (0=auto/unrated, 10=easy, 20=normal,
+          30=hard, 40=harder, 50=insane)
         - Key 17: is_demon
         - Key 25: is_auto
         - Key 43: demon_difficulty (3=easy, 4=medium, 0=hard, 5=insane, 6=extreme)
@@ -278,9 +279,8 @@ class Level(BaseModel):
         diff_num = int(raw_9) if isinstance(raw_9, str) and raw_9.isdigit() else 0
 
         # Compute difficulty
-        if is_auto:
-            data["difficulty"] = LevelDifficulty.AUTO
-        elif is_demon:
+        if is_demon:
+            # Demon levels - use demon_difficulty
             if demon_diff == 3:
                 data["difficulty"] = LevelDifficulty.EASY_DEMON
             elif demon_diff == 4:
@@ -291,6 +291,9 @@ class Level(BaseModel):
                 data["difficulty"] = LevelDifficulty.EXTREME_DEMON
             else:
                 data["difficulty"] = LevelDifficulty.HARD_DEMON
+        elif is_auto or diff_num == 0:
+            # Auto levels have is_auto="1" OR diff_num=0
+            data["difficulty"] = LevelDifficulty.AUTO
         elif diff_num == 10:
             data["difficulty"] = LevelDifficulty.EASY
         elif diff_num == 20:

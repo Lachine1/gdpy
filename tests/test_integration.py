@@ -5,6 +5,7 @@ import pytest_asyncio
 
 from gdpy import AsyncClient
 from gdpy.exceptions import InvalidRequestError
+from gdpy.models import LevelDifficulty
 
 
 @pytest_asyncio.fixture
@@ -312,3 +313,77 @@ class TestCommentHistory:
         user = await client.get_user(account_id=71)
         comments = await client.get_comment_history(user_id=user.user_id)
         assert isinstance(comments, list)
+
+
+class TestLevelDifficulty:
+    """Test difficulty computation on real levels."""
+
+    @pytest.mark.asyncio
+    async def test_easy_level_difficulty(self, client: AsyncClient):
+        """ReTraY (ID 6508283) should be EASY."""
+        level = await client.get_level(level_id=6508283)
+        assert level.name == "ReTraY"
+        assert level.difficulty == LevelDifficulty.EASY
+
+    @pytest.mark.asyncio
+    async def test_normal_level_difficulty(self, client: AsyncClient):
+        """Level Easy (ID 11940) should be NORMAL."""
+        level = await client.get_level(level_id=11940)
+        assert level.name == "Level Easy"
+        assert level.difficulty == LevelDifficulty.NORMAL
+
+    @pytest.mark.asyncio
+    async def test_hard_level_difficulty(self, client: AsyncClient):
+        """OuterSpace (ID 27732941) should be HARD."""
+        level = await client.get_level(level_id=27732941)
+        assert level.name == "OuterSpace"
+        assert level.difficulty == LevelDifficulty.HARD
+
+    @pytest.mark.asyncio
+    async def test_harder_level_difficulty(self, client: AsyncClient):
+        """Shock (ID 28225110) should be HARDER."""
+        level = await client.get_level(level_id=28225110)
+        assert level.name == "Shock"
+        assert level.difficulty == LevelDifficulty.HARDER
+
+    @pytest.mark.asyncio
+    async def test_insane_level_difficulty(self, client: AsyncClient):
+        """Unity (ID 12057578) should be INSANE."""
+        level = await client.get_level(level_id=12057578)
+        assert level.name == "Unity"
+        assert level.difficulty == LevelDifficulty.INSANE
+
+    @pytest.mark.asyncio
+    async def test_auto_level_difficulty(self, client: AsyncClient):
+        """ninemore (ID 114552503) should be AUTO."""
+        level = await client.get_level(level_id=114552503)
+        assert level.name == "ninemore"
+        assert level.difficulty == LevelDifficulty.AUTO
+
+    @pytest.mark.asyncio
+    async def test_easy_demon_difficulty(self, client: AsyncClient):
+        """The Nightmare (ID 13519) should be EASY_DEMON."""
+        level = await client.get_level(level_id=13519)
+        assert level.name == "The Nightmare"
+        assert level.difficulty == LevelDifficulty.EASY_DEMON
+
+    @pytest.mark.asyncio
+    async def test_medium_demon_difficulty(self, client: AsyncClient):
+        """Skeletal Shenanigans (ID 118509879) should be MEDIUM_DEMON."""
+        level = await client.get_level(level_id=118509879)
+        assert level.name == "Skeletal Shenanigans"
+        assert level.difficulty == LevelDifficulty.MEDIUM_DEMON
+
+    @pytest.mark.asyncio
+    async def test_hard_demon_difficulty(self, client: AsyncClient):
+        """Nine Circles (ID 4284013) should be HARD_DEMON."""
+        level = await client.get_level(level_id=4284013)
+        assert level.name == "Nine Circles"
+        assert level.difficulty == LevelDifficulty.HARD_DEMON
+
+    @pytest.mark.asyncio
+    async def test_extreme_demon_difficulty(self, client: AsyncClient):
+        """Bloodbath (ID 10565740) should be EXTREME_DEMON."""
+        level = await client.get_level(level_id=10565740)
+        assert level.name == "Bloodbath"
+        assert level.difficulty == LevelDifficulty.EXTREME_DEMON

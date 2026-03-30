@@ -102,6 +102,8 @@ class TestModels:
         assert level.difficulty == LevelDifficulty.EXTREME_DEMON
 
     def test_difficulty_unspecified(self):
+        # When no difficulty info is provided, it defaults to AUTO (diff_num=0)
+        # This matches the GD API where auto levels have diff_num=0
         data = {"1": "1", "2": "Unrated Level", "6": "1"}
         level = Level.model_validate(data)
-        assert level.difficulty == LevelDifficulty.UNSPECIFIED
+        assert level.difficulty == LevelDifficulty.AUTO
