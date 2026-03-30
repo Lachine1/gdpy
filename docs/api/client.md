@@ -4,7 +4,6 @@ The main client classes for interacting with the Geometry Dash API.
 
 Both `Client` (synchronous) and `AsyncClient` (asynchronous) are available.
 
-Based on the [Geometry Dash API documentation](https://github.com/Rifct/gd-docs).
 
 ## Client (Sync)
 
