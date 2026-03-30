@@ -272,6 +272,8 @@ class Level(BaseModel):
         "featured",
         "verified_coins",
         "two_player",
+        "is_demon",
+        "is_auto",
         mode="before",
     )
     @classmethod

@@ -4,7 +4,6 @@ Thanks for your interest in contributing to gdpy! This document provides guideli
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
 - [Project Structure](#project-structure)
@@ -14,10 +13,6 @@ Thanks for your interest in contributing to gdpy! This document provides guideli
 - [Adding New Endpoints](#adding-new-endpoints)
 - [Documentation](#documentation)
 - [Testing](#testing)
-
-## Code of Conduct
-
-Be respectful and constructive. We're all here to make gdpy better.
 
 ## Getting Started
 
