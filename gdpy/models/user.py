@@ -7,7 +7,7 @@ from the Geometry Dash API, including users, levels, comments, and more.
 from enum import IntEnum
 from typing import Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class ModLevel(IntEnum):
@@ -247,37 +247,64 @@ class Level(BaseModel):
     epic_rating: EpicRating = Field(default=EpicRating.NONE, alias="42")
     password: str | None = Field(default=None, alias="27")
 
-    @field_validator("difficulty", mode="before")
+    @model_validator(mode="before")
     @classmethod
-    def compute_difficulty(cls, v: Any, info: Any) -> LevelDifficulty:
-        """Compute difficulty from raw API fields."""
-        if isinstance(v, LevelDifficulty):
-            return v
-        # Get raw values from the data
-        data = info.data if hasattr(info, "data") else {}
-        raw_17 = data.get("17", "0")  # is_demon
-        raw_25 = data.get("25", "0")  # is_auto
-        raw_43 = data.get("43", "0")  # demon_difficulty
+    def compute_difficulty(cls, data: Any) -> Any:
+        """Compute difficulty from raw API fields.
 
-        # Parse boolean strings
-        is_auto = raw_25 not in ("", "0") if isinstance(raw_25, str) else bool(raw_25)
-        is_demon = raw_17 not in ("", "0") if isinstance(raw_17, str) else bool(raw_17)
+        Uses:
+        - Key 9: difficulty_numerator (0=unrated, 10=easy, 20=normal, 30=hard, 40=harder, 50=insane)
+        - Key 17: is_demon
+        - Key 25: is_auto
+        - Key 43: demon_difficulty (3=easy, 4=medium, 0=hard, 5=insane, 6=extreme)
+        """
+        if not isinstance(data, dict):
+            return data
+
+        # Skip if difficulty already computed
+        if "difficulty" in data and isinstance(data.get("difficulty"), LevelDifficulty):
+            return data
+
+        # Get raw values
+        raw_17 = data.get("17", "")
+        raw_25 = data.get("25", "")
+        raw_43 = data.get("43", "0")
+        raw_9 = data.get("9", "0")
+
+        # Parse boolean strings - "1" means true, "" or "0" means false
+        is_auto = raw_25 == "1"
+        is_demon = raw_17 == "1"
         demon_diff = int(raw_43) if isinstance(raw_43, str) and raw_43.isdigit() else 0
+        diff_num = int(raw_9) if isinstance(raw_9, str) and raw_9.isdigit() else 0
 
+        # Compute difficulty
         if is_auto:
-            return LevelDifficulty.AUTO
-        if is_demon:
-            # Map: 3=easy, 4=medium, 0=hard, 5=insane, 6=extreme
+            data["difficulty"] = LevelDifficulty.AUTO
+        elif is_demon:
             if demon_diff == 3:
-                return LevelDifficulty.EASY_DEMON
+                data["difficulty"] = LevelDifficulty.EASY_DEMON
             elif demon_diff == 4:
-                return LevelDifficulty.MEDIUM_DEMON
+                data["difficulty"] = LevelDifficulty.MEDIUM_DEMON
             elif demon_diff == 5:
-                return LevelDifficulty.INSANE_DEMON
+                data["difficulty"] = LevelDifficulty.INSANE_DEMON
             elif demon_diff == 6:
-                return LevelDifficulty.EXTREME_DEMON
-            return LevelDifficulty.HARD_DEMON
-        return LevelDifficulty.UNSPECIFIED
+                data["difficulty"] = LevelDifficulty.EXTREME_DEMON
+            else:
+                data["difficulty"] = LevelDifficulty.HARD_DEMON
+        elif diff_num == 10:
+            data["difficulty"] = LevelDifficulty.EASY
+        elif diff_num == 20:
+            data["difficulty"] = LevelDifficulty.NORMAL
+        elif diff_num == 30:
+            data["difficulty"] = LevelDifficulty.HARD
+        elif diff_num == 40:
+            data["difficulty"] = LevelDifficulty.HARDER
+        elif diff_num == 50:
+            data["difficulty"] = LevelDifficulty.INSANE
+        else:
+            data["difficulty"] = LevelDifficulty.UNSPECIFIED
+
+        return data
 
     @field_validator(
         "featured",
